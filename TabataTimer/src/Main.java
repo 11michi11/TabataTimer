@@ -33,6 +33,7 @@ public class Main extends JFrame {
 			}
 		});
 		
+		
 		buttonPanel=new JPanel();
 		buttonPanel.add(start);
 		buttonPanel.add(new Countdown());

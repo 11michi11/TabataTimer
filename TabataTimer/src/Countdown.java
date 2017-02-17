@@ -23,11 +23,13 @@ class Countdown extends JComponent{
 		g.setFont(sansbold30);
 		g2.draw(bounds);
 		g.drawString("Seconds:"+sec, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
-		sec--;
+		if(sec>0) 
+			sec--;
 	}
 	
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
 	}
+	
 }
