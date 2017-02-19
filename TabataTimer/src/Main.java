@@ -20,7 +20,9 @@ public class Main extends JFrame {
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
 		
-		JButton start=new JButton("Start");
+		Action startAction=new StartAction("Start");
+		
+		/*JButton start=new JButton("Start");
 		start.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -31,14 +33,18 @@ public class Main extends JFrame {
 					} catch(InterruptedException e) {}
 				}
 			}
-		});
+		});*/
 		
 		
 		buttonPanel=new JPanel();
-		buttonPanel.add(start);
+		buttonPanel.add(new JButton(startAction));
 		buttonPanel.add(new Countdown());
 		add(buttonPanel);
 		
+		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
+		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
+		ActionMap amap=buttonPanel.getActionMap();
+		amap.put("panel.start", startAction);
 		//pack();
 		setLocationRelativeTo(null);
 	}
@@ -54,4 +60,21 @@ public class Main extends JFrame {
 	}
 	
 	
+	public class StartAction extends AbstractAction{
+		
+		public StartAction(String name) {
+			putValue(Action.NAME, name);
+			putValue(Action.SHORT_DESCRIPTION, "Start countdown");
+		}
+		
+		public void actionPerformed(ActionEvent event) {
+			for(int i=0;i<5;i++) {
+				frame.paintComponents(frame.getGraphics());
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch(InterruptedException e) {}
+			}
+		}
+	}
 }
+
