@@ -38,6 +38,10 @@ public class Runds extends JComponent{
 		this.curr=x;
 	}
 	
+	public int getCurr() {
+		return this.curr;
+	}
+	
 	public void addCurr(int x) {
 		this.curr+=x;
 	}
@@ -48,6 +52,14 @@ public class Runds extends JComponent{
 	
 	public void addTab(int x) {
 		this.tabats+=x; 
+	}
+	
+	public int getTabs() {
+		return this.tabats;
+	}
+	
+	public int getTabsTotal() {
+		return this.tabatsTotal;
 	}
 	@Override
 	public Dimension getPreferredSize() {

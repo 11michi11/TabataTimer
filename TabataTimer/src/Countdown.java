@@ -27,8 +27,6 @@ public class Countdown extends JComponent{
 		g2.setFont(sansbold70);
 		g2.draw(bounds);
 		g2.drawString("Seconds:"+sec, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
-		if(sec>0) 
-			sec--;
 	}
 	
 	@Override
@@ -38,6 +36,10 @@ public class Countdown extends JComponent{
 	
 	public void setSec(int x) {
 		this.sec=x;
+	}
+	
+	public void addSec(int x) {
+		this.sec+=x;
 	}
 	
 }
