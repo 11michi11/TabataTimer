@@ -6,7 +6,6 @@ import javax.swing.JFrame;
 import java.awt.*;
 import javax.swing.*;
 import java.util.*;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends JFrame {
@@ -25,7 +24,7 @@ public class Main extends JFrame {
 		
 		Countdown count=new Countdown(20);
 		buttonPanel.add(count);
-		buttonPanel.add(new Runds(8, 3));
+		buttonPanel.add(new Runds(2, 2));
 		add(buttonPanel);
 		
 		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
@@ -48,7 +47,7 @@ public class Main extends JFrame {
 	
 	public class StartAction extends AbstractAction{
 		private boolean flag=true;
-		private Runnable r=new MyRunnable();
+		private Runnable r=new Timer();
 		private Thread t;
 		public StartAction(String name) {
 			putValue(Action.NAME, name);
@@ -70,73 +69,49 @@ public class Main extends JFrame {
 		}
 	}
 	
-	public class MyRunnable implements Runnable{
-		private Timer timer1;
-		private Timer timer2;
-		private Timer timer3;
-		
+	
+	public class Timer implements Runnable{
+		private int current;
+		private boolean started=false;
+		private boolean rest=false;
 		public void run() {
-			Timer timer=new Timer();
-			timer.schedule(new TimerTask() {
-				public void run() {
-					try {
-						while(!Thread.currentThread().isInterrupted()) {
-							timer1=new Timer();
-							timer2=new Timer();
-							timer3=new Timer();
-							((Runds) buttonPanel.getComponent(2)).addCurr(1);
-							((Countdown) buttonPanel.getComponent(1)).setSec(20);
-							timer1.schedule(new TimerTask() {
-								private int counter=0;
-								@Override
-								public void run() {
-									((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-									frame.paintComponents(frame.getGraphics());
-									System.out.println("1:"+counter);
-									if(++counter>19)
-										timer1.cancel();
-								}
-							},0, 1000);
-							timer2.schedule(new TimerTask() {
-								@Override
-								public void run() {
-									((Countdown) buttonPanel.getComponent(1)).setSec(10);
-								}
-								
-							}, 20*1000);
-							timer3.schedule(new TimerTask() {
-								private int counter=0;
-								public void run() {
-									((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-									frame.paintComponents(frame.getGraphics());
-									System.out.println("2:"+counter);
-									if(++counter>9) {
-										if(((Runds)buttonPanel.getComponent(2)).getCurr()==8) {
-											((Runds) buttonPanel.getComponent(2)).addTab(1); 
-											((Runds) buttonPanel.getComponent(2)).setCurr(0);
-											frame.paintComponents(frame.getGraphics());
-										}
-										timer3.cancel();
-									}
-										
-								}
-							},20*1000, 1000);
-							if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) 
-								timer.cancel();
-							System.out.println(Thread.currentThread().isInterrupted());
-							TimeUnit.SECONDS.sleep(30);
-						}
-					}catch(InterruptedException e) {
-						System.out.println("!");
-						timer1.cancel();
-						timer2.cancel();
-						timer3.cancel();
-						timer.cancel();
-						return;
+			try{
+				while(!Thread.currentThread().isInterrupted()) {
+					if(!started) {
+						((Runds) buttonPanel.getComponent(2)).addCurr(1);
+						((Countdown) buttonPanel.getComponent(1)).setSec(20);
+						current=20;
+						started=true;
 					}
+					
+					if(!rest) {
+						while(current>0) {
+							current--;
+							TimeUnit.SECONDS.sleep(1);
+							frame.paintComponents(frame.getGraphics());
+							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
+						}	
+						current=10;
+					}
+					((Countdown) buttonPanel.getComponent(1)).setSec(current);
+					while(current>0) {
+						current--;
+						TimeUnit.SECONDS.sleep(1);
+						frame.paintComponents(frame.getGraphics());
+						((Countdown) buttonPanel.getComponent(1)).addSec(-1);
+					}
+					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
+						((Runds) buttonPanel.getComponent(2)).addTab(1); 
+						((Runds) buttonPanel.getComponent(2)).setCurr(0);
+						frame.paintComponents(frame.getGraphics());
+					}
+					started=false;
+					rest=false;
+					if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) 
+						break;
 				}
-			},0, 30*1000);
+			}catch(InterruptedException e) {}
+			
 		}
-	}
+	}	
 }
-

@@ -61,6 +61,10 @@ public class Runds extends JComponent{
 	public int getTabsTotal() {
 		return this.tabatsTotal;
 	}
+	
+	public int getTotal() {
+		return total;
+	}
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
