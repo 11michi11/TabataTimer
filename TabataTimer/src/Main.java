@@ -4,6 +4,16 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.*;
 import javax.swing.JFrame;
 import java.awt.*;
+import java.io.*;
+import java.net.URL;
+
+import sun.audio.*;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -12,6 +22,7 @@ public class Main extends JFrame {
 	private JPanel buttonPanel;
 	final static Main frame=new Main();
 	public Main() {
+		
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
@@ -25,6 +36,7 @@ public class Main extends JFrame {
 		Countdown count=new Countdown(20);
 		buttonPanel.add(count);
 		buttonPanel.add(new Runds(2, 2));
+		//buttonPanel.setBackground(Color.blue);
 		add(buttonPanel);
 		
 		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
@@ -49,6 +61,8 @@ public class Main extends JFrame {
 		private boolean flag=true;
 		private Runnable r=new Timer();
 		private Thread t;
+		private Runnable ra=new Audio();
+		private Thread ta;
 		public StartAction(String name) {
 			putValue(Action.NAME, name);
 			putValue(Action.SHORT_DESCRIPTION, "Start countdown");
@@ -58,13 +72,31 @@ public class Main extends JFrame {
 			if(flag) {
 				t=new Thread(r);
 				t.start();
+				ta=new Thread(ra);
+				ta.start();
 				((JButton)buttonPanel.getComponent(0)).setText("Pause");
 				
 				flag=false;
 			}else {
 				((JButton)buttonPanel.getComponent(0)).setText("Start");
+				buttonPanel.setBackground(Color.BLUE);
 				t.interrupt();
+				ta.interrupt();
 				flag=true;
+			}
+		}
+	}
+	
+	public class Audio implements Runnable{
+		private boolean started=false;
+		public void run() {
+			while(!Thread.currentThread().isInterrupted()) {
+				if(!started) {
+					String audioFilePath="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
+					AudioPlayer audio=new AudioPlayer();
+					audio.play(audioFilePath);
+					started=true;
+				}
 			}
 		}
 	}
@@ -85,6 +117,7 @@ public class Main extends JFrame {
 					}
 					
 					if(!rest) {
+						buttonPanel.setBackground(Color.GREEN);
 						while(current>0) {
 							current--;
 							TimeUnit.SECONDS.sleep(1);
@@ -94,6 +127,7 @@ public class Main extends JFrame {
 						current=10;
 					}
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
+					buttonPanel.setBackground(Color.RED);
 					while(current>0) {
 						current--;
 						TimeUnit.SECONDS.sleep(1);
@@ -110,7 +144,9 @@ public class Main extends JFrame {
 					if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) 
 						break;
 				}
-			}catch(InterruptedException e) {}
+			}catch(InterruptedException e) {
+				System.out.println("Timer interrupted!");
+			}
 			
 		}
 	}	
