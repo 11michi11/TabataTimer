@@ -27,8 +27,8 @@ public class Main extends JFrame {
     private String audioFile;
 	final static Main frame=new Main();
 	public Main() {
-		audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
-		
+		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
+		audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
@@ -53,7 +53,9 @@ public class Main extends JFrame {
 	}
 	
 	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-		AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+		AudioInputStream audioStream = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
+		//^ this make MP3 work
         AudioFormat format = audioStream.getFormat();
         DataLine.Info info = new DataLine.Info(Clip.class, format);
         this.clip = (Clip) AudioSystem.getLine(info);
