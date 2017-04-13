@@ -12,6 +12,8 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class AudioPlayer implements LineListener{
 	boolean playCompleted;
+	int frame;
+	
 	
 	void play(String audioFilePath) {
 		File audioFile=new File(audioFilePath);
@@ -23,12 +25,15 @@ public class AudioPlayer implements LineListener{
 			Clip audioClip=(Clip)AudioSystem.getLine(info);
 			audioClip.addLineListener(this);
 			audioClip.open(audioStream);
+			audioClip.setFramePosition(frame);
 			audioClip.start();
 			
 			while(!playCompleted) {
 				try {
 					Thread.sleep(1000);
 				}catch (InterruptedException e) {
+					frame=audioClip.getFramePosition();
+					audioClip.setFramePosition(frame);
 					e.printStackTrace();
 					audioClip.stop();
 				}
@@ -47,13 +52,16 @@ public class AudioPlayer implements LineListener{
         }
 	}
 	
+	
+	
 	@Override
 	public void update(LineEvent event) {
 		LineEvent.Type type=event.getType();
 		if(type==LineEvent.Type.START) {
 			System.out.println("Playback started");
 		}else if(type==LineEvent.Type.STOP) {
-			playCompleted=true;
+			//playCompleted=true;
+			
 			System.out.println("Playback completed");
 		}
 	}
