@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends JFrame {
-	private JPanel buttonPanel;
+	private TabataPanel buttonPanel;
 	private int lastFrame;
     private Clip clip;
     private String audioFile;
@@ -36,8 +36,8 @@ public class Main extends JFrame {
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
-		buttonPanel=new JPanel();
-		
+		buttonPanel=new TabataPanel();
+		buttonPanel.setDoubleBuffered(true);
 		
 		
 		Action startAction=new StartAction("Start");
@@ -120,7 +120,7 @@ public class Main extends JFrame {
 				flag=false;
 			}else {
 				((JButton)buttonPanel.getComponent(0)).setText("Start");
-				buttonPanel.setBackground(Color.BLUE);
+				buttonPanel.setColors(Color.WHITE, Color.BLUE);
 				t.interrupt();
 				flag=true;
 			}
@@ -144,20 +144,22 @@ public class Main extends JFrame {
 					}
 					
 					if(!rest) {
-						buttonPanel.setBackground(Color.GREEN);
+						buttonPanel.setColors(Color.WHITE, Color.GREEN);
 						playMusic();
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
 							current--;
 							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-							frame.paintComponents(frame.getGraphics());
+							buttonPanel.getComponent(1).repaint();
+							buttonPanel.getComponent(2).repaint();
+							//frame.paintComponents(frame.getGraphics());
 						}	
 						current=10;
 						rest=true;
 					}
 					
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
-					buttonPanel.setBackground(Color.RED);
+					buttonPanel.setColors(Color.WHITE, Color.RED);
 					if(isMusic) {
 						playMusic();
 						gainControl.setValue(-15.0f);
@@ -168,12 +170,16 @@ public class Main extends JFrame {
 						TimeUnit.SECONDS.sleep(1);
 						current--;
 						((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-						frame.paintComponents(frame.getGraphics());
+						buttonPanel.getComponent(1).repaint();
+						buttonPanel.getComponent(2).repaint();
+						//frame.paintComponents(frame.getGraphics());
 					}
 					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
 						((Runds) buttonPanel.getComponent(2)).addTab(1); 
 						((Runds) buttonPanel.getComponent(2)).setCurr(0);
-						frame.paintComponents(frame.getGraphics());
+						buttonPanel.getComponent(1).repaint();
+						buttonPanel.getComponent(2).repaint();
+						//frame.paintComponents(frame.getGraphics());
 					}
 					isMusic=true;
 					started=false;
