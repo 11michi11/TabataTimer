@@ -12,6 +12,7 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
@@ -25,6 +26,7 @@ public class Main extends JFrame {
 	private int lastFrame;
     private Clip clip;
     private String audioFile;
+    private FloatControl gainControl; 
 	final static Main frame=new Main();
 	public Main() {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
@@ -54,12 +56,13 @@ public class Main extends JFrame {
 	
 	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		AudioInputStream audioStream = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
 		//^ this make MP3 work
-        AudioFormat format = audioStream.getFormat();
-        DataLine.Info info = new DataLine.Info(Clip.class, format);
-        this.clip = (Clip) AudioSystem.getLine(info);
+        AudioFormat format=audioStream.getFormat();
+        DataLine.Info info=new DataLine.Info(Clip.class, format);
+        this.clip=(Clip)AudioSystem.getLine(info);
         this.clip.open(audioStream);
+        gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
     }
 	
 	public static void main(String[] args) {
@@ -73,7 +76,7 @@ public class Main extends JFrame {
 	}
 	
 	public void playMusic() {
-		if (clip == null) {
+		if (clip==null) {
             try {
                 loadClip(new File(audioFile));
                 clip.start();
@@ -83,12 +86,12 @@ public class Main extends JFrame {
             }
         } else {
             if (clip.isRunning()) {
-                lastFrame = clip.getFramePosition();
+                lastFrame=clip.getFramePosition();
                 clip.stop();
             } else {
-                if (lastFrame < clip.getFrameLength()) {
+                if (lastFrame<clip.getFrameLength()) {
                     clip.setFramePosition(lastFrame);
-                } else {
+                } else{
                     clip.setFramePosition(0);
                 }
                 clip.start();
@@ -111,14 +114,12 @@ public class Main extends JFrame {
 			if(flag) {
 				t=new Thread(r);
 				t.start();
-				//playMusic();
 				((JButton)buttonPanel.getComponent(0)).setText("Pause");
 				flag=false;
 			}else {
 				((JButton)buttonPanel.getComponent(0)).setText("Start");
 				buttonPanel.setBackground(Color.BLUE);
 				t.interrupt();
-				//playMusic();
 				flag=true;
 			}
 		}
@@ -157,6 +158,7 @@ public class Main extends JFrame {
 					buttonPanel.setBackground(Color.RED);
 					if(isMusic) {
 						playMusic();
+						gainControl.setValue(-15.0f);
 						isMusic=false;
 					}
 					
