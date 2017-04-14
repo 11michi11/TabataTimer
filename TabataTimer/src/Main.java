@@ -38,6 +38,8 @@ public class Main extends JFrame {
 		setSize(screenWidth/2, screenWidth/2);
 		buttonPanel=new JPanel();
 		
+		
+		
 		Action startAction=new StartAction("Start");
 		buttonPanel.add(new JButton(startAction));
 		
