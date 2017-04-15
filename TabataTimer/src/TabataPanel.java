@@ -27,4 +27,8 @@ public class TabataPanel extends JPanel{
 		this.color2=color2;
 	}
 	
+	public String getColorsS() {
+		return color1.toString()+color2.toString();
+	}
+	
 }

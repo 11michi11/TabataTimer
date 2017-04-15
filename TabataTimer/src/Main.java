@@ -6,7 +6,6 @@ import java.awt.*;
 import java.io.*;
 import java.net.URL;
 import sun.audio.*;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -22,12 +21,14 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends JFrame {
-	private TabataPanel buttonPanel;
+	private JPanel buttonPanel;
+	private TabataPanel tabataPanel;
 	private int lastFrame;
     private Clip clip;
     private String audioFile;
-    private FloatControl gainControl; 
+    private FloatControl gainControl;
 	final static Main frame=new Main();
+	
 	public Main() {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
 		audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
@@ -36,18 +37,25 @@ public class Main extends JFrame {
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
+		
+		tabataPanel=new TabataPanel();
+		tabataPanel.setColors(Color.WHITE, Color.YELLOW);
+		add(tabataPanel);
+		
 		buttonPanel=new TabataPanel();
-		buttonPanel.setDoubleBuffered(true);
-		
-		
 		Action startAction=new StartAction("Start");
-		buttonPanel.add(new JButton(startAction));
+		buttonPanel.add(new JButton(startAction), BorderLayout.SOUTH);
 		
 		Countdown count=new Countdown(20);
-		buttonPanel.add(count);
-		buttonPanel.add(new Runds(2, 2));
+		count.setOpaque(false);
+		buttonPanel.add(count, BorderLayout.NORTH);
+		Runds runds=new Runds(2,2);
+		runds.setOpaque(false);
+		buttonPanel.add(runds, BorderLayout.NORTH);
 		//buttonPanel.setBackground(Color.blue);
 		add(buttonPanel);
+		
+		
 		
 		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
@@ -120,7 +128,7 @@ public class Main extends JFrame {
 				flag=false;
 			}else {
 				((JButton)buttonPanel.getComponent(0)).setText("Start");
-				buttonPanel.setColors(Color.WHITE, Color.BLUE);
+				tabataPanel.setColors(Color.WHITE, Color.BLUE);
 				t.interrupt();
 				flag=true;
 			}
@@ -144,7 +152,9 @@ public class Main extends JFrame {
 					}
 					
 					if(!rest) {
-						buttonPanel.setColors(Color.WHITE, Color.GREEN);
+						tabataPanel.setColors(Color.WHITE, Color.GREEN);
+						//System.out.println(tabataPanel.getColorsS());
+						tabataPanel.repaint();
 						playMusic();
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
@@ -159,7 +169,8 @@ public class Main extends JFrame {
 					}
 					
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
-					buttonPanel.setColors(Color.WHITE, Color.RED);
+					tabataPanel.setColors(Color.WHITE, Color.RED);
+					tabataPanel.repaint();
 					if(isMusic) {
 						playMusic();
 						gainControl.setValue(-15.0f);
