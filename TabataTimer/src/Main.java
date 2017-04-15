@@ -22,11 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 public class Main extends JFrame {
 	private JPanel buttonPanel;
+	private JPanel test;
 	private TabataPanel tabataPanel;
 	private int lastFrame;
     private Clip clip;
     private String audioFile;
     private FloatControl gainControl;
+    private JMenuBar menuBar;
 	final static Main frame=new Main();
 	
 	public Main() {
@@ -42,7 +44,7 @@ public class Main extends JFrame {
 		tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 		add(tabataPanel);
 		
-		buttonPanel=new TabataPanel();
+		buttonPanel=new JPanel();
 		Action startAction=new StartAction("Start");
 		buttonPanel.add(new JButton(startAction), BorderLayout.SOUTH);
 		
@@ -55,13 +57,35 @@ public class Main extends JFrame {
 		//buttonPanel.setBackground(Color.blue);
 		add(buttonPanel);
 		
-		
+		/*test=new JPanel();
+		test.setOpaque(false);
+		test.add(new JButton("Test"));
+		test.add(new JButton("-"));
+		test.add(new JButton("+"));
+		add(test, BorderLayout.SOUTH);
+		*/
 		
 		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
 		ActionMap amap=buttonPanel.getActionMap();
 		amap.put("panel.start", startAction);
 		setLocationRelativeTo(null);
+		
+		
+		menuBar=new JMenuBar();
+		setJMenuBar(menuBar);
+		JMenu optionsMenu=new JMenu("Options");
+		menuBar.add(optionsMenu);
+		JMenu statsMenu=new JMenu("Stats");
+		menuBar.add(statsMenu);
+		JMenu helpMenu=new JMenu("Help");
+		menuBar.add(helpMenu);
+		JMenuItem aboutItem=helpMenu.add("About");
+		aboutItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent event) {
+				JOptionPane.showMessageDialog(Main.this, "Test messege", "About", JOptionPane.PLAIN_MESSAGE);
+			}
+		});
 	}
 	
 	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
@@ -107,6 +131,14 @@ public class Main extends JFrame {
                 clip.start();
             }
         }
+	}
+	
+	public class OptionsDialog extends JDialog{
+		
+		public OptionsDialog(JFrame owner) {
+			JPanel tabPanel=new JPanel();
+			//tabPanel.add(new JLabel(""))
+		}
 	}
 	
 	
