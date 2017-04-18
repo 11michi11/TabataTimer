@@ -29,6 +29,7 @@ public class Main extends JFrame {
     private String audioFile;
     private FloatControl gainControl;
     private JMenuBar menuBar;
+    private TabSetupDialog tabSetupDialog;
 	final static Main frame=new Main();
 	
 	public Main() {
@@ -74,37 +75,29 @@ public class Main extends JFrame {
 		
 		menuBar=new JMenuBar();
 		setJMenuBar(menuBar);
-		JMenu optionsMenu=new JMenu("Options");
-		menuBar.add(optionsMenu);
+		JMenu settingsMenu=new JMenu("Settings");
+		menuBar.add(settingsMenu);
+		JMenuItem tabSetup=settingsMenu.add("Setup Tabata");
+		tabSetup.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(tabSetupDialog==null	)
+					tabSetupDialog=new TabSetupDialog(Main.this);
+				tabSetupDialog.setVisible(true);
+			}
+		});
+		
 		JMenu statsMenu=new JMenu("Stats");
 		menuBar.add(statsMenu);
 		JMenu helpMenu=new JMenu("Help");
 		menuBar.add(helpMenu);
 		JMenuItem aboutItem=helpMenu.add("About");
 		aboutItem.addActionListener(new ActionListener() {
+			
+			@Override
 			public void actionPerformed(ActionEvent event) {
 				JOptionPane.showMessageDialog(Main.this, "Test messege", "About", JOptionPane.PLAIN_MESSAGE);
-			}
-		});
-	}
-	
-	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
-		//^ this make MP3 work
-        AudioFormat format=audioStream.getFormat();
-        DataLine.Info info=new DataLine.Info(Clip.class, format);
-        this.clip=(Clip)AudioSystem.getLine(info);
-        this.clip.open(audioStream);
-        gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-    }
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setTitle("TabataTimer - Alfa 1.0");
-				frame.setVisible(true);
 			}
 		});
 	}
@@ -133,11 +126,95 @@ public class Main extends JFrame {
         }
 	}
 	
-	public class OptionsDialog extends JDialog{
+	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
+		//^ this make MP3 work
+        AudioFormat format=audioStream.getFormat();
+        DataLine.Info info=new DataLine.Info(Clip.class, format);
+        this.clip=(Clip)AudioSystem.getLine(info);
+        this.clip.open(audioStream);
+        gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+    }
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setTitle("TabataTimer - Alfa 1.0");
+				frame.setVisible(true);
+			}
+		});
+	}
+	
+	
+	
+	public class TabSetupDialog extends JDialog{
 		
-		public OptionsDialog(JFrame owner) {
+		public TabSetupDialog(JFrame owner) {
+			super(owner, "Options", true);
 			JPanel tabPanel=new JPanel();
-			//tabPanel.add(new JLabel(""))
+			
+			TabSetupComponent tabSetup=new TabSetupComponent();
+			tabPanel.add(tabSetup);
+			JButton subT=new JButton("-");
+			subT.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					((Runds)buttonPanel.getComponent(2)).addTabTotal(-1);
+					repaint();
+				}
+			});
+			tabPanel.add(subT);
+			
+			JButton addT=new JButton("+");
+			addT.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					((Runds)buttonPanel.getComponent(2)).addTabTotal(1);
+					repaint();
+				}
+			});
+			tabPanel.add(addT);
+			add(tabPanel, BorderLayout.NORTH);
+			
+			JButton ok=new JButton("OK");
+			ok.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					frame.paintComponents(frame.getGraphics());
+					setVisible(false);					
+				}
+			});
+			JPanel wrappingPanel=new JPanel();
+			wrappingPanel.add(ok);
+			add(wrappingPanel, BorderLayout.SOUTH);
+			
+			setLocationRelativeTo(owner);
+			//setSize(500,300);
+			pack();
+			
+			
+		}
+		
+		public class TabSetupComponent extends JComponent{
+			private static final int DEFAULT_WIDTH=200;
+			private static final int DEAULT_HEIGHT=100;
+			
+			@Override
+			public void paintComponent(Graphics g) {
+				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
+				g.setFont(sansbold25);
+				g.drawString("Tabats:"+((Runds)buttonPanel.getComponent(2)).getTabsTotal(), 50, 50);
+			}
+			
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(DEFAULT_WIDTH, DEAULT_HEIGHT);
+			}
 		}
 	}
 	

@@ -22,14 +22,14 @@ public class Runds extends JComponent{
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D) g;
-		Font sansbold70=new Font("SansSerif", Font.BOLD, 80);
+		Font sansbold80=new Font("SansSerif", Font.BOLD, 80);
 		FontRenderContext context=g2.getFontRenderContext();
-		Rectangle2D bounds=sansbold70.getStringBounds("Runds:8/8 Tabaty:0/10", context);
+		Rectangle2D bounds=sansbold80.getStringBounds("Runds:8/8 Tabaty:0/10", context);
 		double stringWidth=bounds.getWidth();
 		double stringHeight=bounds.getHeight();
 		double ascent=-bounds.getY();
 		bounds.setRect((int)(getWidth()-stringWidth)/2, (int)(getHeight()-stringHeight)/2, stringWidth, stringHeight);
-		g2.setFont(sansbold70);
+		g2.setFont(sansbold80);
 		//g2.draw(bounds);
 		g2.drawString("Rund:"+curr+"/"+total+" Tabaty:"+tabats+"/"+tabatsTotal, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
 	}
@@ -65,6 +65,11 @@ public class Runds extends JComponent{
 	public int getTotal() {
 		return total;
 	}
+	
+	public void addTabTotal(int x) {
+		this.tabatsTotal+=x;
+	}
+	
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
