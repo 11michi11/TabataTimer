@@ -47,14 +47,14 @@ public class Main extends JFrame {
 		
 		buttonPanel=new JPanel();
 		Action startAction=new StartAction("Start");
-		buttonPanel.add(new JButton(startAction), BorderLayout.SOUTH);
+		buttonPanel.add(new JButton(startAction));
 		
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
-		buttonPanel.add(count, BorderLayout.NORTH);
+		buttonPanel.add(count);
 		Runds runds=new Runds(2,2);
 		runds.setOpaque(false);
-		buttonPanel.add(runds, BorderLayout.NORTH);
+		buttonPanel.add(runds);
 		//buttonPanel.setBackground(Color.blue);
 		add(buttonPanel);
 		
@@ -152,11 +152,14 @@ public class Main extends JFrame {
 	public class TabSetupDialog extends JDialog{
 		
 		public TabSetupDialog(JFrame owner) {
-			super(owner, "Options", true);
+			super(owner, "Tabata Setup", true);
 			JPanel tabPanel=new JPanel();
 			
 			TabSetupComponent tabSetup=new TabSetupComponent();
-			tabPanel.add(tabSetup);
+			//tabPanel.add(tabSetup);
+			//add(tabPanel);
+			
+			JPanel tabSetButtonPanel=new JPanel();
 			JButton subT=new JButton("-");
 			subT.addActionListener(new ActionListener() {
 				
@@ -166,7 +169,7 @@ public class Main extends JFrame {
 					repaint();
 				}
 			});
-			tabPanel.add(subT);
+			//tabSetButtonPanel.add(subT);
 			
 			JButton addT=new JButton("+");
 			addT.addActionListener(new ActionListener() {
@@ -177,9 +180,30 @@ public class Main extends JFrame {
 					repaint();
 				}
 			});
-			tabPanel.add(addT);
-			add(tabPanel, BorderLayout.NORTH);
+			//tabSetButtonPanel.add(addT);
 			
+			JButton subR=new JButton("-");
+			subR.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					((Runds)buttonPanel.getComponent(2)).addTotal(-1);
+					repaint();
+				}
+			});
+			//tabSetButtonPanel.add(subR);
+			
+			JButton addR=new JButton("+");
+			addR.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					((Runds)buttonPanel.getComponent(2)).addTotal(1);
+					repaint();
+				}
+			});
+			
+
 			JButton ok=new JButton("OK");
 			ok.addActionListener(new ActionListener() {
 				
@@ -191,7 +215,37 @@ public class Main extends JFrame {
 			});
 			JPanel wrappingPanel=new JPanel();
 			wrappingPanel.add(ok);
-			add(wrappingPanel, BorderLayout.SOUTH);
+			//add(wrappingPanel);
+			
+			//tabSetButtonPanel.add(addR);
+			//add(tabSetButtonPanel);
+			GroupLayout layout=new GroupLayout(tabSetButtonPanel);
+			tabSetButtonPanel.setLayout(layout);
+			layout.setAutoCreateGaps(true);
+			layout.setAutoCreateContainerGaps(true);
+			
+			layout.setHorizontalGroup(layout.createSequentialGroup()
+					.addComponent(tabSetup)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(subT)
+							.addComponent(subR))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+							.addComponent(addT)
+							.addComponent(addR)
+							.addComponent(ok)));
+				
+			layout.setVerticalGroup(layout.createSequentialGroup()
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
+							.addComponent(tabSetup)
+							.addComponent(subT)
+							.addComponent(addT)
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(subR)
+							.addComponent(addR))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
+							.addComponent(ok)));
+			add(tabSetButtonPanel);
+			
 			
 			setLocationRelativeTo(owner);
 			//setSize(500,300);
@@ -201,19 +255,28 @@ public class Main extends JFrame {
 		}
 		
 		public class TabSetupComponent extends JComponent{
-			private static final int DEFAULT_WIDTH=200;
-			private static final int DEAULT_HEIGHT=100;
+			private static final int DEFAULT_WIDTH=175;
+			private static final int DEFAULT_HEIGHT=100;
 			
 			@Override
 			public void paintComponent(Graphics g) {
+				Graphics2D g2=(Graphics2D)g;
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
+				FontRenderContext context=g2.getFontRenderContext();
+				Rectangle2D bounds=sansbold25.getStringBounds("Tabats:00", context);
+				double stringWidth=bounds.getWidth();
+				double stringHeight=bounds.getHeight();
+				
+			//	DEFAULT_WIDTH=(int)stringWidth;
+			//	DEFAULT_HEIGHT=(int)stringHeight;
 				g.setFont(sansbold25);
-				g.drawString("Tabats:"+((Runds)buttonPanel.getComponent(2)).getTabsTotal(), 50, 50);
+				g.drawString("Tabats:"+((Runds)buttonPanel.getComponent(2)).getTabsTotal(), 0, 25);
+				g.drawString("Runds:"+((Runds)buttonPanel.getComponent(2)).getTotal(), 0, 50);
 			}
 			
 			@Override
 			public Dimension getPreferredSize() {
-				return new Dimension(DEFAULT_WIDTH, DEAULT_HEIGHT);
+				return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 			}
 		}
 	}

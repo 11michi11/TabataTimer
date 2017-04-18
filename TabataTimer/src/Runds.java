@@ -70,6 +70,10 @@ public class Runds extends JComponent{
 		this.tabatsTotal+=x;
 	}
 	
+	public void addTotal(int x) {
+		this.total+=x;
+	}
+	
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
