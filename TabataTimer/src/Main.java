@@ -35,15 +35,16 @@ public class Main extends JFrame {
 	public Main() {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
 		audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
+		
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
 		
-		tabataPanel=new TabataPanel();
+		/*tabataPanel=new TabataPanel();
 		tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-		add(tabataPanel);
+		add(tabataPanel);*/
 		
 		buttonPanel=new JPanel();
 		Action startAction=new StartAction("Start");
@@ -154,12 +155,9 @@ public class Main extends JFrame {
 		public TabSetupDialog(JFrame owner) {
 			super(owner, "Tabata Setup", true);
 			JPanel tabPanel=new JPanel();
-			
 			TabSetupComponent tabSetup=new TabSetupComponent();
-			//tabPanel.add(tabSetup);
-			//add(tabPanel);
+			RundsSetupComponent rundsSetup=new RundsSetupComponent();
 			
-			JPanel tabSetButtonPanel=new JPanel();
 			JButton subT=new JButton("-");
 			subT.addActionListener(new ActionListener() {
 				
@@ -169,7 +167,6 @@ public class Main extends JFrame {
 					repaint();
 				}
 			});
-			//tabSetButtonPanel.add(subT);
 			
 			JButton addT=new JButton("+");
 			addT.addActionListener(new ActionListener() {
@@ -180,7 +177,6 @@ public class Main extends JFrame {
 					repaint();
 				}
 			});
-			//tabSetButtonPanel.add(addT);
 			
 			JButton subR=new JButton("-");
 			subR.addActionListener(new ActionListener() {
@@ -191,7 +187,6 @@ public class Main extends JFrame {
 					repaint();
 				}
 			});
-			//tabSetButtonPanel.add(subR);
 			
 			JButton addR=new JButton("+");
 			addR.addActionListener(new ActionListener() {
@@ -203,7 +198,6 @@ public class Main extends JFrame {
 				}
 			});
 			
-
 			JButton ok=new JButton("OK");
 			ok.addActionListener(new ActionListener() {
 				
@@ -213,65 +207,67 @@ public class Main extends JFrame {
 					setVisible(false);					
 				}
 			});
-			JPanel wrappingPanel=new JPanel();
-			wrappingPanel.add(ok);
-			//add(wrappingPanel);
 			
-			//tabSetButtonPanel.add(addR);
-			//add(tabSetButtonPanel);
-			GroupLayout layout=new GroupLayout(tabSetButtonPanel);
-			tabSetButtonPanel.setLayout(layout);
+			GroupLayout layout=new GroupLayout(tabPanel);
+			tabPanel.setLayout(layout);
 			layout.setAutoCreateGaps(true);
 			layout.setAutoCreateContainerGaps(true);
 			
-			layout.setHorizontalGroup(layout.createSequentialGroup()
-					.addComponent(tabSetup)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-							.addComponent(subT)
-							.addComponent(subR))
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-							.addComponent(addT)
-							.addComponent(addR)
-							.addComponent(ok)));
-				
 			layout.setVerticalGroup(layout.createSequentialGroup()
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
 							.addComponent(tabSetup)
 							.addComponent(subT)
-							.addComponent(addT)
-					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(addT))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+							.addComponent(rundsSetup)
 							.addComponent(subR)
 							.addComponent(addR))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
 							.addComponent(ok)));
-			add(tabSetButtonPanel);
+				
+			layout.setHorizontalGroup(layout.createSequentialGroup()
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(tabSetup)
+							.addComponent(rundsSetup))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(subT)
+							.addComponent(subR)
+							.addComponent(ok))
+					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+							.addComponent(addT)
+							.addComponent(addR)));
 			
-			
+			add(tabPanel);
 			setLocationRelativeTo(owner);
-			//setSize(500,300);
 			pack();
-			
-			
 		}
 		
 		public class TabSetupComponent extends JComponent{
-			private static final int DEFAULT_WIDTH=175;
-			private static final int DEFAULT_HEIGHT=100;
+			private static final int DEFAULT_WIDTH=100;
+			private static final int DEFAULT_HEIGHT=25;
 			
 			@Override
 			public void paintComponent(Graphics g) {
-				Graphics2D g2=(Graphics2D)g;
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
-				FontRenderContext context=g2.getFontRenderContext();
-				Rectangle2D bounds=sansbold25.getStringBounds("Tabats:00", context);
-				double stringWidth=bounds.getWidth();
-				double stringHeight=bounds.getHeight();
-				
-			//	DEFAULT_WIDTH=(int)stringWidth;
-			//	DEFAULT_HEIGHT=(int)stringHeight;
 				g.setFont(sansbold25);
 				g.drawString("Tabats:"+((Runds)buttonPanel.getComponent(2)).getTabsTotal(), 0, 25);
-				g.drawString("Runds:"+((Runds)buttonPanel.getComponent(2)).getTotal(), 0, 50);
+			}
+			
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			}
+		}
+		
+		public class RundsSetupComponent extends JComponent{
+			private static final int DEFAULT_WIDTH=100;
+			private static final int DEFAULT_HEIGHT=25;
+			
+			@Override
+			public void paintComponent(Graphics g) {
+				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
+				g.setFont(sansbold25);
+				g.drawString("Runds:"+((Runds)buttonPanel.getComponent(2)).getTotal(), 0, 25);
 			}
 			
 			@Override
