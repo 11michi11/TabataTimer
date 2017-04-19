@@ -30,27 +30,32 @@ public class Main extends JFrame {
 	private JPanel test;
 	private TabataPanel tabataPanel;
 	private int lastFrame;
-    private Clip clip;
-    private String audioFile;
+    private Clip currClip;
+    private File audioFile;
     private FloatControl gainControl;
     private JMenuBar menuBar;
     private TabSetupDialog tabSetupDialog;
-    private ArrayList<Clip> sounds=new ArrayList<Clip>();
+    private ArrayList<String> soundsPaths=new ArrayList<String>();
+    private int musicIndx=0;
 	final static Main frame=new Main();
 	
 	public Main() {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
-		audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
+		//audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
 		
 		try(Stream<Path> paths = Files.walk(Paths.get("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/Edited"))) {
 		    paths.forEach(filePath -> {
 		        if (Files.isRegularFile(filePath)) {
-		            System.out.println(filePath);
+		            //System.out.println(filePath);
+		            soundsPaths.add(filePath.toString());
 		        }
 		    });
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
+		
+		for(String e:soundsPaths)
+			System.out.println(e);
 		
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
@@ -106,40 +111,39 @@ public class Main extends JFrame {
 		
 	}
 	
-	public void playMusic() {
-		if (clip==null) {
-            try {
-                loadClip(new File(audioFile));
-                clip.start();
-            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
-                ex.printStackTrace();
-                JOptionPane.showMessageDialog(Main.this, "Failed to load audio clip", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        } else {
-            if (clip.isRunning()) {
-                lastFrame=clip.getFramePosition();
-                clip.stop();
-            } else {
-                if (lastFrame<clip.getFrameLength()) {
-                    clip.setFramePosition(lastFrame);
-                } else{
-                    clip.setFramePosition(0);
-                }
-                clip.start();
-            }
-        }
-	}
-	
-	protected void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	public void loadClip(File audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
 		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
 		//^ this make MP3 work
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
-        this.clip=(Clip)AudioSystem.getLine(info);
-        this.clip.open(audioStream);
-        gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
+        currClip=(Clip)AudioSystem.getLine(info);
+        currClip.open(audioStream);
+        gainControl=(FloatControl)currClip.getControl(FloatControl.Type.MASTER_GAIN);
+        lastFrame=0;
     }
+	
+	public void playMusic() {
+        if (lastFrame<currClip.getFrameLength()) {
+            currClip.setFramePosition(lastFrame);
+        } else{
+            currClip.setFramePosition(0);
+        }
+        currClip.start();  
+        System.out.println("Play");
+	}
+	
+	public void pauseMusic() {
+		if (currClip.isRunning()) {
+            lastFrame=currClip.getFramePosition();
+            currClip.stop();
+        }else {
+        	System.out.println("Music isn't playing");
+        }
+		System.out.println("Pause");
+	}
+	
+	
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -313,10 +317,36 @@ public class Main extends JFrame {
 		private boolean started=false;
 		private boolean rest=false;
 		private boolean isMusic=true;
+		private boolean before=false;
+		private boolean played=true;
 		public void run() {
 			try{
 				while(!Thread.currentThread().isInterrupted()) {
+					if(!before) {
+						current=5;
+						((Countdown) buttonPanel.getComponent(1)).setSec(5);
+						buttonPanel.setColors(Color.WHITE, Color.BLUE);
+						buttonPanel.repaint();
+						if(played) {
+							audioFile=new File(soundsPaths.get(musicIndx).toString());
+							musicIndx++;
+							loadClip(audioFile);
+							played=false;
+						}
+						playMusic();
+						gainControl.setValue(-15.0f);
+						while(current>0) {
+							TimeUnit.SECONDS.sleep(1);
+							current--;
+							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
+							buttonPanel.getComponent(1).repaint();
+							buttonPanel.getComponent(2).repaint();
+						}	
+						before=true;
+					}
+					
 					if(!started) {
+						gainControl.setValue(6.0f);
 						((Runds) buttonPanel.getComponent(2)).addCurr(1);
 						((Countdown) buttonPanel.getComponent(1)).setSec(20);
 						current=20;
@@ -326,7 +356,9 @@ public class Main extends JFrame {
 					if(!rest) {
 						buttonPanel.setColors(Color.WHITE, Color.GREEN);
 						buttonPanel.repaint();
-						playMusic();
+						if(!currClip.isRunning())
+							playMusic();
+						//System.out.println("FP:"+currClip.getFramePosition());
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
 							current--;
@@ -341,13 +373,23 @@ public class Main extends JFrame {
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
 					buttonPanel.setColors(Color.WHITE, Color.RED);
 					buttonPanel.repaint();
-					if(isMusic) {
+					gainControl.setValue(-15.0f);
+					if(!currClip.isRunning())
 						playMusic();
-						gainControl.setValue(-15.0f);
-						isMusic=false;
-					}
 					
 					while(current>0) {
+						if(current==5) {
+							pauseMusic();
+							played=true;
+							audioFile=new File(soundsPaths.get(musicIndx).toString());
+							musicIndx++;
+							System.out.println(musicIndx);
+							loadClip(audioFile);
+							gainControl.setValue(-15.0f);
+							playMusic();
+							played=false;
+						}
+							
 						TimeUnit.SECONDS.sleep(1);
 						current--;
 						((Countdown) buttonPanel.getComponent(1)).addSec(-1);
@@ -360,16 +402,25 @@ public class Main extends JFrame {
 						buttonPanel.getComponent(1).repaint();
 						buttonPanel.getComponent(2).repaint();
 					}
-					isMusic=true;
 					started=false;
 					rest=false;
-					if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) 
+					if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) {
+						pauseMusic();
 						break;
+					}
 				}
 			}catch(InterruptedException e) {
-				if(!rest) 
-					playMusic();
+				pauseMusic();
 				System.out.println("Timer interrupted!");
+			} catch (LineUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedAudioFileException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}	
