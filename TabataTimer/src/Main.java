@@ -5,6 +5,10 @@ import java.awt.geom.*;
 import java.awt.*;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import sun.audio.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -19,6 +23,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class Main extends JFrame {
 	private TabataPanel buttonPanel;
@@ -30,21 +35,29 @@ public class Main extends JFrame {
     private FloatControl gainControl;
     private JMenuBar menuBar;
     private TabSetupDialog tabSetupDialog;
+    private ArrayList<Clip> sounds=new ArrayList<Clip>();
 	final static Main frame=new Main();
 	
 	public Main() {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
 		audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
 		
+		try(Stream<Path> paths = Files.walk(Paths.get("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/Edited"))) {
+		    paths.forEach(filePath -> {
+		        if (Files.isRegularFile(filePath)) {
+		            System.out.println(filePath);
+		        }
+		    });
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
-		
-		tabataPanel=new TabataPanel();
-		tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-		//add(tabataPanel);
+		setLocationRelativeTo(null);
 		
 		buttonPanel=new TabataPanel();
 		Action startAction=new StartAction("Start");
@@ -56,23 +69,12 @@ public class Main extends JFrame {
 		Runds runds=new Runds(2,2);
 		runds.setOpaque(false);
 		buttonPanel.add(runds);
-		//buttonPanel.setBackground(Color.blue);
 		add(buttonPanel);
-		
-		/*test=new JPanel();
-		test.setOpaque(false);
-		test.add(new JButton("Test"));
-		test.add(new JButton("-"));
-		test.add(new JButton("+"));
-		add(test, BorderLayout.SOUTH);
-		*/
 		
 		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
 		ActionMap amap=buttonPanel.getActionMap();
 		amap.put("panel.start", startAction);
-		setLocationRelativeTo(null);
-		
 		
 		menuBar=new JMenuBar();
 		setJMenuBar(menuBar);
@@ -102,8 +104,6 @@ public class Main extends JFrame {
 			}
 		});
 		
-		for(Component e:buttonPanel.getComponents())
-			System.out.println(e.toString());
 	}
 	
 	public void playMusic() {
@@ -325,7 +325,6 @@ public class Main extends JFrame {
 					
 					if(!rest) {
 						buttonPanel.setColors(Color.WHITE, Color.GREEN);
-						//System.out.println(tabataPanel.getColorsS());
 						buttonPanel.repaint();
 						playMusic();
 						while(current>0) {
@@ -334,7 +333,6 @@ public class Main extends JFrame {
 							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
 							buttonPanel.getComponent(1).repaint();
 							buttonPanel.getComponent(2).repaint();
-							//frame.paintComponents(frame.getGraphics());
 						}	
 						current=10;
 						rest=true;
@@ -355,14 +353,12 @@ public class Main extends JFrame {
 						((Countdown) buttonPanel.getComponent(1)).addSec(-1);
 						buttonPanel.getComponent(1).repaint();
 						buttonPanel.getComponent(2).repaint();
-						//frame.paintComponents(frame.getGraphics());
 					}
 					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
 						((Runds) buttonPanel.getComponent(2)).addTab(1); 
 						((Runds) buttonPanel.getComponent(2)).setCurr(0);
 						buttonPanel.getComponent(1).repaint();
 						buttonPanel.getComponent(2).repaint();
-						//frame.paintComponents(frame.getGraphics());
 					}
 					isMusic=true;
 					started=false;
@@ -375,7 +371,6 @@ public class Main extends JFrame {
 					playMusic();
 				System.out.println("Timer interrupted!");
 			}
-			
 		}
 	}	
 }
