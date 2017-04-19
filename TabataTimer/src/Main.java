@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main extends JFrame {
-	private JPanel buttonPanel;
+	private TabataPanel buttonPanel;
 	private JPanel test;
 	private TabataPanel tabataPanel;
 	private int lastFrame;
@@ -42,11 +42,11 @@ public class Main extends JFrame {
 		int screenWidth=screenSize.width;
 		setSize(screenWidth/2, screenWidth/2);
 		
-		/*tabataPanel=new TabataPanel();
+		tabataPanel=new TabataPanel();
 		tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-		add(tabataPanel);*/
+		//add(tabataPanel);
 		
-		buttonPanel=new JPanel();
+		buttonPanel=new TabataPanel();
 		Action startAction=new StartAction("Start");
 		buttonPanel.add(new JButton(startAction));
 		
@@ -101,6 +101,9 @@ public class Main extends JFrame {
 				JOptionPane.showMessageDialog(Main.this, "Test messege", "About", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
+		
+		for(Component e:buttonPanel.getComponents())
+			System.out.println(e.toString());
 	}
 	
 	public void playMusic() {
@@ -296,7 +299,8 @@ public class Main extends JFrame {
 				flag=false;
 			}else {
 				((JButton)buttonPanel.getComponent(0)).setText("Start");
-				tabataPanel.setColors(Color.WHITE, Color.BLUE);
+				buttonPanel.setColors(Color.WHITE, Color.BLUE);
+				buttonPanel.repaint();
 				t.interrupt();
 				flag=true;
 			}
@@ -320,9 +324,9 @@ public class Main extends JFrame {
 					}
 					
 					if(!rest) {
-						tabataPanel.setColors(Color.WHITE, Color.GREEN);
+						buttonPanel.setColors(Color.WHITE, Color.GREEN);
 						//System.out.println(tabataPanel.getColorsS());
-						tabataPanel.repaint();
+						buttonPanel.repaint();
 						playMusic();
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
@@ -337,8 +341,8 @@ public class Main extends JFrame {
 					}
 					
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
-					tabataPanel.setColors(Color.WHITE, Color.RED);
-					tabataPanel.repaint();
+					buttonPanel.setColors(Color.WHITE, Color.RED);
+					buttonPanel.repaint();
 					if(isMusic) {
 						playMusic();
 						gainControl.setValue(-15.0f);
