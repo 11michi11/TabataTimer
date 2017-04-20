@@ -44,7 +44,7 @@ public class Main extends JFrame {
 		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
 		//audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
 		try {
-			timerClip=loadClip(new File("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/TABATA_TIMER_no_music.mp3"),true);
+			timerClip=loadClip(new File("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/single_round_no_music.mp3"),true);
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -143,7 +143,7 @@ public class Main extends JFrame {
 	        } else{
 	            clip.setFramePosition(0);
 	        }
-		}else {
+		}else if(clip==timerClip){
 			if (lastFrameT<clip.getFrameLength()) {
 	            clip.setFramePosition(lastFrameT);
 	        } else{
@@ -151,7 +151,7 @@ public class Main extends JFrame {
 	        }
 		}
         clip.start();  
-        System.out.println("Play");
+        System.out.println("Play:"+(clip==currClip?"curr":"timer"));
 	}
 	
 	public void pauseMusic(Clip clip) {
@@ -162,7 +162,7 @@ public class Main extends JFrame {
 	        }else {
 	        	System.out.println("Music isn't playing");
 	        }
-		}else {
+		}else if(clip==timerClip){
 			if (clip.isRunning()) {
 	            lastFrameT=clip.getFramePosition();
 	            clip.stop();
@@ -170,7 +170,7 @@ public class Main extends JFrame {
 	        	System.out.println("Music isn't playing");
 	        }
 		}
-		System.out.println("Pause");
+		System.out.println("Pause:"+(clip==currClip?"curr":"timer"));
 	}
 	
 	
@@ -346,7 +346,6 @@ public class Main extends JFrame {
 		private int current;
 		private boolean started=false;
 		private boolean rest=false;
-		private boolean isMusic=true;
 		private boolean before=false;
 		private boolean played=true;
 		private boolean reset=false;
@@ -360,7 +359,7 @@ public class Main extends JFrame {
 					}
 					if(!before) {
 						playMusic(timerClip);
-						current=7;
+						current=10;
 						((Countdown) buttonPanel.getComponent(1)).setSec(current);
 						buttonPanel.setColors(Color.WHITE, Color.BLUE);
 						buttonPanel.repaint();
@@ -370,9 +369,11 @@ public class Main extends JFrame {
 							currClip=loadClip(audioFile, false);
 							played=false;
 						}
-						playMusic(currClip);
+						
 						gainControl.setValue(-15.0f);
 						while(current>0) {
+							if(current==5)
+								playMusic(currClip);
 							TimeUnit.SECONDS.sleep(1);
 							current--;
 							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
@@ -390,11 +391,12 @@ public class Main extends JFrame {
 						started=true;
 					}
 					
+					if(!timerClip.isRunning())
+						playMusic(timerClip);
+					
 					if(!rest) {
-						if(!currClip.isRunning()) {
+						if(!currClip.isRunning()) 
 							playMusic(currClip);
-							playMusic(timerClip);
-						}
 						buttonPanel.setColors(Color.WHITE, Color.GREEN);
 						buttonPanel.repaint();
 						
@@ -406,14 +408,20 @@ public class Main extends JFrame {
 							buttonPanel.getComponent(1).repaint();
 							buttonPanel.getComponent(2).repaint();
 						}	
+						pauseMusic(timerClip);
+						timerClip.setFramePosition(0);
+						System.out.println(timerClip.isRunning()+" "+timerClip.getFramePosition());
+						playMusic(timerClip);
+						System.out.println(timerClip.isRunning()+" "+timerClip.getFramePosition());
 						current=10;
 						rest=true;
 					}
 					
-					if(!currClip.isRunning()) {
+					if(!currClip.isRunning())
 						playMusic(currClip);
+					if(!timerClip.isRunning())
 						playMusic(timerClip);
-					}
+					
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
 					buttonPanel.setColors(Color.WHITE, Color.RED);
 					buttonPanel.repaint();
@@ -425,7 +433,6 @@ public class Main extends JFrame {
 							played=true;
 							audioFile=new File(soundsPaths.get(musicIndx).toString());
 							musicIndx++;
-							System.out.println(musicIndx);
 							currClip=loadClip(audioFile, false);
 							gainControl.setValue(-15.0f);
 							playMusic(currClip);
