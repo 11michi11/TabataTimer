@@ -349,30 +349,40 @@ public class Main extends JFrame {
 		private boolean before=false;
 		private boolean played=true;
 		private boolean reset=false;
+		private boolean restRound=false;
+		private boolean runed=false;
+		private Random rn=new Random();
 		
 		public void run() {
 			try{
+				int rand;
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)buttonPanel.getComponent(2)).setTab(0);
 						reset=false;
 					}
 					if(!before) {
+						System.out.println("1");
 						playMusic(timerClip);
-						current=10;
+						if(!runed)
+							current=10;
+						runed=true;
 						((Countdown) buttonPanel.getComponent(1)).setSec(current);
 						buttonPanel.setColors(Color.WHITE, Color.BLUE);
 						buttonPanel.repaint();
 						if(played) {
+							do {
+								rand=rn.nextInt(soundsPaths.size());
+							}while(musicIndx==rand);
+							musicIndx=rand;
 							audioFile=new File(soundsPaths.get(musicIndx).toString());
-							musicIndx++;
 							currClip=loadClip(audioFile, false);
 							played=false;
 						}
 						
 						gainControl.setValue(-15.0f);
 						while(current>0) {
-							if(current==5)
+							if(current==5) 
 								playMusic(currClip);
 							TimeUnit.SECONDS.sleep(1);
 							current--;
@@ -381,6 +391,7 @@ public class Main extends JFrame {
 							buttonPanel.getComponent(2).repaint();
 						}	
 						before=true;
+						runed=false;
 					}
 					
 					if(!started) {
@@ -391,16 +402,16 @@ public class Main extends JFrame {
 						started=true;
 					}
 					
-					if(!timerClip.isRunning())
+					if(!timerClip.isRunning()&&!restRound) {
 						playMusic(timerClip);
-					
+						System.out.println("3");
+					}
 					if(!rest) {
 						if(!currClip.isRunning()) 
 							playMusic(currClip);
 						buttonPanel.setColors(Color.WHITE, Color.GREEN);
 						buttonPanel.repaint();
 						
-						//System.out.println("FP:"+currClip.getFramePosition());
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
 							current--;
@@ -409,30 +420,46 @@ public class Main extends JFrame {
 							buttonPanel.getComponent(2).repaint();
 						}	
 						pauseMusic(timerClip);
-						timerClip.setFramePosition(0);
-						System.out.println(timerClip.isRunning()+" "+timerClip.getFramePosition());
+						lastFrameT=timerClip.getFrameLength();
+						System.out.println("4");
 						playMusic(timerClip);
-						System.out.println(timerClip.isRunning()+" "+timerClip.getFramePosition());
 						current=10;
 						rest=true;
 					}
 					
 					if(!currClip.isRunning())
 						playMusic(currClip);
-					if(!timerClip.isRunning())
+					if(!timerClip.isRunning()&&!restRound) {
 						playMusic(timerClip);
+						System.out.println("5");
+					}
+					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) 
+						pauseMusic(timerClip);
+					
+					
 					
 					((Countdown) buttonPanel.getComponent(1)).setSec(current);
 					buttonPanel.setColors(Color.WHITE, Color.RED);
 					buttonPanel.repaint();
 					gainControl.setValue(-15.0f);
 					
-					while(current>0) {
+					while(current>0) {	
+						if(current==10&&restRound) {
+							playMusic(timerClip);
+							System.out.println("6");
+						}
+						if(!timerClip.isRunning()&&current<10&&restRound) {
+							playMusic(timerClip);
+							System.out.println("8");
+						}
 						if(current==5) {
 							pauseMusic(currClip);
 							played=true;
+							do {
+								rand=rn.nextInt(soundsPaths.size());
+							}while(musicIndx==rand);
+							musicIndx=rand;
 							audioFile=new File(soundsPaths.get(musicIndx).toString());
-							musicIndx++;
 							currClip=loadClip(audioFile, false);
 							gainControl.setValue(-15.0f);
 							playMusic(currClip);
@@ -445,23 +472,32 @@ public class Main extends JFrame {
 						buttonPanel.getComponent(1).repaint();
 						buttonPanel.getComponent(2).repaint();
 					}
+					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) 
+						pauseMusic(timerClip);
+					
 					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
+						restRound=true;
 						((Runds) buttonPanel.getComponent(2)).addTab(1); 
 						((Runds) buttonPanel.getComponent(2)).setCurr(0);
-						//buttonPanel.getComponent(1).repaint();
-						//buttonPanel.getComponent(2).repaint();
 						buttonPanel.setColors(Color.WHITE, Color.BLUE);
 						buttonPanel.repaint();
-						
+		
+						pauseMusic(timerClip);
 						current=20;
 						((Countdown) buttonPanel.getComponent(1)).setSec(current);
 						while(current>0) {
+							if(current==10&&((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
+								playMusic(timerClip);
+								System.out.println("7");
+							}
 							if(current==5) {
 								pauseMusic(currClip);
 								played=true;
+								do {
+									rand=rn.nextInt(soundsPaths.size());
+								}while(musicIndx==rand);
+								musicIndx=rand;
 								audioFile=new File(soundsPaths.get(musicIndx).toString());
-								musicIndx++;
-								System.out.println(musicIndx);
 								currClip=loadClip(audioFile, false);
 								gainControl.setValue(-15.0f);
 								playMusic(currClip);
@@ -474,6 +510,9 @@ public class Main extends JFrame {
 							buttonPanel.getComponent(2).repaint();
 						}	
 						played=true;
+						restRound=false;
+					}else {
+						restRound=false;
 					}
 					started=false;
 					rest=false;
@@ -484,6 +523,7 @@ public class Main extends JFrame {
 						buttonPanel.setColors(Color.WHITE, Color.BLUE);
 						buttonPanel.repaint();
 						reset=true;
+						before=false;
 						break;
 					}
 				}
