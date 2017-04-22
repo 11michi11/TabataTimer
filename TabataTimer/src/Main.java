@@ -41,8 +41,6 @@ public class Main extends JFrame {
 	final static Main frame=new Main();
 	
 	public Main() {
-		//audioFile="C:/Users/Michi/Desktop/Programowanie/workspace/test/TNT_High_Quality.wav";
-		//audioFile="D:/Muzyka/Blowing in the Wind - Bob Dylan.mp3";
 		try {
 			timerClip=loadClip(new File("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/single_round_no_music.mp3"),true);
 		} catch (LineUnavailableException e2) {
@@ -56,7 +54,6 @@ public class Main extends JFrame {
 		try(Stream<Path> paths = Files.walk(Paths.get("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/Edited"))) {
 		    paths.forEach(filePath -> {
 		        if (Files.isRegularFile(filePath)) {
-		            //System.out.println(filePath);
 		            soundsPaths.add(filePath.toString());
 		        }
 		    });
@@ -108,6 +105,8 @@ public class Main extends JFrame {
 		
 		JMenu statsMenu=new JMenu("Stats");
 		menuBar.add(statsMenu);
+		JMenuItem comingSoon=statsMenu.add("Coming Soon");
+		
 		JMenu helpMenu=new JMenu("Help");
 		menuBar.add(helpMenu);
 		JMenuItem aboutItem=helpMenu.add("About");
@@ -115,9 +114,40 @@ public class Main extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				JOptionPane.showMessageDialog(Main.this, "Test messege", "About", JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showMessageDialog(Main.this, 
+						"This is bacis timer for Tabata.\n"
+						+ "Tabata is made of 8 rounds,\n"
+						+ "20 seconds of excercise and 10 seconds for rest.\n"
+						+ "After each Tabata there is Rest Round\n"
+						+ "(you can realax for 30 seconds).\n"
+						+ "Number of rounds in each Tabata and number of Tabats\n"
+						+ "in trening can by adjusted in SETTINGS -> Setup Tabata.\n"
+						+ "For example excercises go to HELP -> EXAMPLES.\n\n"
+						+ "Author: Micha³ Pompa\n"
+						+ "Contact: 11michi11@gmail.com",
+						"About", JOptionPane.PLAIN_MESSAGE);
 			}
 		});
+		JMenuItem examplesItem=helpMenu.add("Examples");
+		examplesItem.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(Main.this,
+						"This is example set of excercises for 8 round Tabata:\n"
+						+ "1. Burpees\n"
+						+ "2. Squats with front kick\n"
+						+ "3. Jumping Jacks\n"
+						+ "4. Mountain Climbing\n"
+						+ "5. Burpees\n"
+						+ "6. Situps\n"
+						+ "7. Jumping Jacks\n"
+						+ "8. Shadowboxing" ,
+						"Examples", JOptionPane.PLAIN_MESSAGE);
+				
+			}
+		});
+		
 		
 	}
 	
@@ -173,19 +203,23 @@ public class Main extends JFrame {
 		System.out.println("Pause:"+(clip==currClip?"curr":"timer"));
 	}
 	
-	
-	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				frame.setTitle("TabataTimer - Alfa 1.0");
 				frame.setVisible(true);
+				
+				JOptionPane.showMessageDialog(frame,
+						"Welcom to Tabata Timer, your best training partner.\n"
+						+ "To start or pause Tabata press SPACE.\n"
+						+ "To setup your training, go to SETTINGS.\n"
+						+ "If you get lost, go to HELP\n",
+						"Start Messege", JOptionPane.PLAIN_MESSAGE);
+				
 			}
 		});
 	}
-	
-	
 	
 	public class TabSetupDialog extends JDialog{
 		
@@ -314,7 +348,6 @@ public class Main extends JFrame {
 		}
 	}
 	
-	
 	public class StartAction extends AbstractAction{
 		private boolean flag=true;
 		private Runnable r=new Timer();
@@ -341,7 +374,6 @@ public class Main extends JFrame {
 		}
 	}
 	
-	
 	public class Timer implements Runnable{
 		private int current;
 		private boolean started=false;
@@ -359,6 +391,7 @@ public class Main extends JFrame {
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)buttonPanel.getComponent(2)).setTab(0);
+						lastFrameT=timerClip.getFrameLength();
 						reset=false;
 					}
 					if(!before) {
@@ -395,7 +428,7 @@ public class Main extends JFrame {
 					}
 					
 					if(!started) {
-						gainControl.setValue(6.0f);
+						gainControl.setValue(5.0f);
 						((Runds) buttonPanel.getComponent(2)).addCurr(1);
 						((Countdown) buttonPanel.getComponent(1)).setSec(20);
 						current=20;
@@ -486,7 +519,7 @@ public class Main extends JFrame {
 						current=20;
 						((Countdown) buttonPanel.getComponent(1)).setSec(current);
 						while(current>0) {
-							if(current==10&&((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
+							if(current==10&&restRound) {
 								playMusic(timerClip);
 								System.out.println("7");
 							}

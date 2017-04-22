@@ -34,6 +34,11 @@ public class Runds extends JComponent{
 		g2.drawString("Rund:"+curr+"/"+total+" Tabaty:"+tabats+"/"+tabatsTotal, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
 	}
 	
+	@Override
+	public Dimension getPreferredSize() {
+		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	}
+	
 	public void setCurr(int x) {
 		this.curr=x;
 	}
@@ -73,9 +78,4 @@ public class Runds extends JComponent{
 	public void addTotal(int x) {
 		this.total+=x;
 	}
-	
-	@Override
-	public Dimension getPreferredSize() {
-		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
-	 }
 }
