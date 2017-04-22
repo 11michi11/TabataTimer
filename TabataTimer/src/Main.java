@@ -4,11 +4,13 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.*;
 import java.awt.*;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+import java.security.CodeSource;
 import sun.audio.*;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -23,7 +25,12 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import Resources.ResourceClass;
 
 public class Main extends JFrame {
 	private TabataPanel buttonPanel;
@@ -41,8 +48,22 @@ public class Main extends JFrame {
 	final static Main frame=new Main();
 	
 	public Main() {
+		
+		
+
 		try {
-			timerClip=loadClip(new File("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/single_round_no_music.mp3"),true);
+			String[] files=getResourceListing(ResourceClass.class, "Resources/");
+			for(String e:files)
+				soundsPaths.add(Paths.get(e).toString());
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			audioFile=new File("single_round_no_music.mp3");
+			timerClip=loadClip(audioFile,true);
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -51,15 +72,15 @@ public class Main extends JFrame {
 			e2.printStackTrace();
 		}
 		
-		try(Stream<Path> paths = Files.walk(Paths.get("C:/Users/Michi/Desktop/Programowanie/Git/TabataTimer/Edited"))) {
+		/*try(Stream<Path> paths = Files.walk(Paths.get("/Resources"))) {
 		    paths.forEach(filePath -> {
 		        if (Files.isRegularFile(filePath)) {
 		            soundsPaths.add(filePath.toString());
 		        }
 		    });
 		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+			
+		}*/
 		
 		for(String e:soundsPaths)
 			System.out.println(e);
@@ -151,10 +172,66 @@ public class Main extends JFrame {
 		
 	}
 	
+	
+	/**
+	   * List directory contents for a resource folder. Not recursive.
+	   * This is basically a brute-force implementation.
+	   * Works for regular files and also JARs.
+	   * 
+	   * @author Greg Briggs
+	   * @param clazz Any java class that lives in the same place as the resources you want.
+	   * @param path Should end with "/", but not start with one.
+	   * @return Just the name of each member item, not the full paths.
+	   * @throws URISyntaxException 
+	   * @throws IOException 
+	   */
+	
+	 String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
+	      URL dirURL = clazz.getClassLoader().getResource(path);
+	      if (dirURL != null && dirURL.getProtocol().equals("file")) {
+	        /* A file path: easy enough */
+	        return new File(dirURL.toURI()).list();
+	      } 
+
+	      if (dirURL == null) {
+	        /* 
+	         * In case of a jar file, we can't actually find a directory.
+	         * Have to assume the same jar as clazz.
+	         */
+	        String me = clazz.getName().replace(".", "/")+".class";
+	        dirURL = clazz.getClassLoader().getResource(me);
+	      }
+
+	      if (dirURL.getProtocol().equals("jar")) {
+	        /* A JAR path */
+	        String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
+	        JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
+	        Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
+	        Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
+	        while(entries.hasMoreElements()) {
+	          String name = entries.nextElement().getName();
+	          if (name.startsWith(path)) { //filter according to the path
+	            String entry = name.substring(path.length());
+	            int checkSubdir = entry.indexOf("/");
+	            if (checkSubdir >= 0) {
+	              // if it is a subdirectory, we just return the directory name
+	              entry = entry.substring(0, checkSubdir);
+	            }
+	            result.add(entry);
+	          }
+	        }
+	        return result.toArray(new String[result.size()]);
+	      } 
+
+	      throw new UnsupportedOperationException("Cannot list files for URL "+dirURL);
+	  }
+	
 	public Clip loadClip(File audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
+		System.out.println(audioFile.getName());
+		InputStream iStream=ResourceClass.class.getResourceAsStream(audioFile.toString());
 		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(audioFile));
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(iStream));
 		//^ this make MP3 work
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
@@ -207,7 +284,7 @@ public class Main extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setTitle("TabataTimer - Alfa 1.0");
+				frame.setTitle("TabataTimer - Alfa 1.9");
 				frame.setVisible(true);
 				
 				JOptionPane.showMessageDialog(frame,
@@ -373,6 +450,7 @@ public class Main extends JFrame {
 			}
 		}
 	}
+	
 	
 	public class Timer implements Runnable{
 		private int current;
