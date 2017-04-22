@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import Resources.ResourceClass;
+//import Resources.ResourceClass;
 
 public class Main extends JFrame {
 	private TabataPanel buttonPanel;
@@ -49,22 +49,23 @@ public class Main extends JFrame {
 	
 	public Main() {
 		
-		/*InputStream stream=ResourceClass.class.getResourceAsStream("single_round_no_music.mp3");
-		System.out.println(stream);*/
-
-		try {
-			String[] files=getResourceListing(ResourceClass.class, "Resources/");
-			for(String e:files)
-				soundsPaths.add(Paths.get(e).toString());
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		InputStream namesStream=Main.class.getResourceAsStream("names.txt");
+		System.out.println(namesStream);
+		Scanner in=new Scanner(namesStream);
+		//System.out.println(in.nextLine());
+		
+		while(in.hasNext()) {
+			soundsPaths.add(in.next());
 		}
+		
+		for(String e:soundsPaths)
+			System.out.println(e);
+		
 		
 		try {
 			audioFile=new File("single_round_no_music.mp3");
 			timerClip=loadClip(audioFile,true);
+			System.out.println(timerClip);
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -72,6 +73,16 @@ public class Main extends JFrame {
 		} catch (UnsupportedAudioFileException e2) {
 			e2.printStackTrace();
 		}
+		
+		/*try {
+			String[] files=getResourceListing(ResourceClass.class, "Resources/");
+			for(String e:files)
+				soundsPaths.add(Paths.get(e).toString());
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}*/
 		
 		/*try(Stream<Path> paths = Files.walk(Paths.get("/Resources"))) {
 		    paths.forEach(filePath -> {
@@ -83,8 +94,7 @@ public class Main extends JFrame {
 			
 		}*/
 		
-		for(String e:soundsPaths)
-			System.out.println(e);
+		
 		
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
@@ -229,10 +239,10 @@ public class Main extends JFrame {
 	
 	public Clip loadClip(File audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
-		System.out.println(audioFile.getName());
-		InputStream iStream=ResourceClass.class.getResourceAsStream(audioFile.toString());
+		System.out.println(audioFile.getName()+"!");
+		//InputStream iStream=Main.class.getResourceAsStream(audioFile.toString());
 		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(iStream));
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(Main.class.getResource(audioFile.toString())));
 		//^ this make MP3 work
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
@@ -487,7 +497,8 @@ public class Main extends JFrame {
 								rand=rn.nextInt(soundsPaths.size());
 							}while(musicIndx==rand);
 							musicIndx=rand;
-							audioFile=new File(soundsPaths.get(musicIndx).toString());
+							System.out.println(soundsPaths.get(musicIndx));
+							audioFile=new File("Deep_Purple_Burn.mp3");
 							currClip=loadClip(audioFile, false);
 							played=false;
 						}
