@@ -94,6 +94,7 @@ public class Main extends JFrame {
 			
 		}*/
 		
+		System.out.println(codecLib.mp3.Decoder.class.getName());
 		
 		
 		Toolkit kit=Toolkit.getDefaultToolkit();
@@ -498,7 +499,7 @@ public class Main extends JFrame {
 							}while(musicIndx==rand);
 							musicIndx=rand;
 							System.out.println(soundsPaths.get(musicIndx));
-							audioFile=new File("Deep_Purple_Burn.mp3");
+							audioFile=new File(soundsPaths.get(musicIndx));
 							currClip=loadClip(audioFile, false);
 							played=false;
 						}
