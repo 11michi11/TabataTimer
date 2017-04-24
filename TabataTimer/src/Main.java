@@ -30,7 +30,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-//import Resources.ResourceClass;
+
 
 public class Main extends JFrame {
 	private TabataPanel buttonPanel;
@@ -49,10 +49,9 @@ public class Main extends JFrame {
 	
 	public Main() {
 		
-		InputStream namesStream=Main.class.getResourceAsStream("names.txt");
-		System.out.println(namesStream);
+		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
+		System.out.println(namesStream+"#");
 		Scanner in=new Scanner(namesStream);
-		//System.out.println(in.nextLine());
 		
 		while(in.hasNext()) {
 			soundsPaths.add(in.next());
@@ -63,7 +62,9 @@ public class Main extends JFrame {
 		
 		
 		try {
-			audioFile=new File("single_round_no_music.mp3");
+			
+			audioFile=new File(this.getClass().getClassLoader().getResource("resources/single_round_no_music.mp3").getFile());
+			//audioFile=new File("/resources/single_round_no_music.mp3");
 			timerClip=loadClip(audioFile,true);
 			System.out.println(timerClip);
 		} catch (LineUnavailableException e2) {
@@ -241,9 +242,11 @@ public class Main extends JFrame {
 	public Clip loadClip(File audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
 		System.out.println(audioFile.getName()+"!");
-		//InputStream iStream=Main.class.getResourceAsStream(audioFile.toString());
+		//InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile.toString());
+		//System.out.println(iStream+" istream");
 		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, AudioSystem.getAudioInputStream(Main.class.getResource(audioFile.toString())));
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED,
+				AudioSystem.getAudioInputStream(audioFile));
 		//^ this make MP3 work
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
@@ -499,7 +502,7 @@ public class Main extends JFrame {
 							}while(musicIndx==rand);
 							musicIndx=rand;
 							System.out.println(soundsPaths.get(musicIndx));
-							audioFile=new File(soundsPaths.get(musicIndx));
+							audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsPaths.get(musicIndx)).getFile());
 							currClip=loadClip(audioFile, false);
 							played=false;
 						}
@@ -583,7 +586,7 @@ public class Main extends JFrame {
 								rand=rn.nextInt(soundsPaths.size());
 							}while(musicIndx==rand);
 							musicIndx=rand;
-							audioFile=new File(soundsPaths.get(musicIndx).toString());
+							audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsPaths.get(musicIndx)).getFile());
 							currClip=loadClip(audioFile, false);
 							gainControl.setValue(-15.0f);
 							playMusic(currClip);
@@ -621,7 +624,7 @@ public class Main extends JFrame {
 									rand=rn.nextInt(soundsPaths.size());
 								}while(musicIndx==rand);
 								musicIndx=rand;
-								audioFile=new File(soundsPaths.get(musicIndx).toString());
+								audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsPaths.get(musicIndx)).getFile());
 								currClip=loadClip(audioFile, false);
 								gainControl.setValue(-15.0f);
 								playMusic(currClip);
