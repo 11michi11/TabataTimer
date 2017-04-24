@@ -33,7 +33,7 @@ import java.util.zip.ZipInputStream;
 
 
 public class Main extends JFrame {
-	private TabataPanel buttonPanel;
+	private TabataPanel tabataPanel;
 	private JPanel test;
 	private int lastFrame;
 	private int lastFrameT;
@@ -49,24 +49,29 @@ public class Main extends JFrame {
 	
 	public Main() {
 		
+		//Loading names.txt form resources.
+		//names.txt contains names of songs, which are used as background music during training. Names are separated by space
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
-		System.out.println(namesStream+"#");
+		System.out.println(namesStream+"#"); //for debug, sometimes namesStream was null
 		Scanner in=new Scanner(namesStream);
 		
+		
+		//Loading songs names to ArrayList<String> soundsPaths
 		while(in.hasNext()) {
 			soundsPaths.add(in.next());
 		}
 		
+		//for debug, prints the content of ArrayList<String> soundsPaths to check if names loaded properly
 		for(String e:soundsPaths)
 			System.out.println(e);
 		
 		
 		try {
-			
+			//Loading song to a File audioFile from resources
 			audioFile=new File(this.getClass().getClassLoader().getResource("resources/single_round_no_music.mp3").getFile());
-			//audioFile=new File("/resources/single_round_no_music.mp3");
+			//Creating Clip timerClip and preparing it to be playable in loadClip() function
 			timerClip=loadClip(audioFile,true);
-			System.out.println(timerClip);
+			System.out.println(timerClip);	//for debug, to check if Clip timerClip was created properly
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -75,53 +80,46 @@ public class Main extends JFrame {
 			e2.printStackTrace();
 		}
 		
-		/*try {
-			String[] files=getResourceListing(ResourceClass.class, "Resources/");
-			for(String e:files)
-				soundsPaths.add(Paths.get(e).toString());
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}*/
-		
-		/*try(Stream<Path> paths = Files.walk(Paths.get("/Resources"))) {
-		    paths.forEach(filePath -> {
-		        if (Files.isRegularFile(filePath)) {
-		            soundsPaths.add(filePath.toString());
-		        }
-		    });
-		} catch (IOException e1) {
-			
-		}*/
-		
-		System.out.println(codecLib.mp3.Decoder.class.getName());
-		
-		
+		//Creating Toolkit kit to get screen size
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
+		//Setting size of the frame to square with a side of a half screen width
 		setSize(screenWidth/2, screenWidth/2);
+		//Setting frame relative location to null
 		setLocationRelativeTo(null);
 		
-		buttonPanel=new TabataPanel();
+		//Creating TabataPanel tabataPanel. This is main panel of frame. 
+		//It is responsible for displaying background.
+		//It is also main panel for components witch are responsible for displaying countdown and rounds	
+		tabataPanel=new TabataPanel();
+		//Creating new Action startAction.
+		//It is responsible for starting training by running countdown and music in new Thread Timer.
+		//Can be started by button or pressing space key.
 		Action startAction=new StartAction("Start");
-		buttonPanel.add(new JButton(startAction));
+		tabataPanel.add(new JButton(startAction));
 		
+		//Creating new component Countdown count. It is responsible for displaying counting down. 
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
-		buttonPanel.add(count);
+		tabataPanel.add(count);
+		
+		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
 		Runds runds=new Runds(2,2);
 		runds.setOpaque(false);
-		buttonPanel.add(runds);
-		add(buttonPanel);
+		tabataPanel.add(runds);
 		
-		InputMap imap=buttonPanel.getInputMap(JComponent.WHEN_FOCUSED);
+		//Adding tabataPanel to frame
+		add(tabataPanel);
+		
+		//Creating InputMap and ActionMap to enable staring by pressing space key
+		InputMap imap=tabataPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
-		ActionMap amap=buttonPanel.getActionMap();
+		ActionMap amap=tabataPanel.getActionMap();
 		amap.put("panel.start", startAction);
 		
+		//Creating JMenuBar menuBar for frame, and adding 
 		menuBar=new JMenuBar();
 		setJMenuBar(menuBar);
 		JMenu settingsMenu=new JMenu("Settings");
@@ -184,60 +182,6 @@ public class Main extends JFrame {
 		
 		
 	}
-	
-	
-	/**
-	   * List directory contents for a resource folder. Not recursive.
-	   * This is basically a brute-force implementation.
-	   * Works for regular files and also JARs.
-	   * 
-	   * @author Greg Briggs
-	   * @param clazz Any java class that lives in the same place as the resources you want.
-	   * @param path Should end with "/", but not start with one.
-	   * @return Just the name of each member item, not the full paths.
-	   * @throws URISyntaxException 
-	   * @throws IOException 
-	   */
-	
-	 String[] getResourceListing(Class clazz, String path) throws URISyntaxException, IOException {
-	      URL dirURL = clazz.getClassLoader().getResource(path);
-	      if (dirURL != null && dirURL.getProtocol().equals("file")) {
-	        /* A file path: easy enough */
-	        return new File(dirURL.toURI()).list();
-	      } 
-
-	      if (dirURL == null) {
-	        /* 
-	         * In case of a jar file, we can't actually find a directory.
-	         * Have to assume the same jar as clazz.
-	         */
-	        String me = clazz.getName().replace(".", "/")+".class";
-	        dirURL = clazz.getClassLoader().getResource(me);
-	      }
-
-	      if (dirURL.getProtocol().equals("jar")) {
-	        /* A JAR path */
-	        String jarPath = dirURL.getPath().substring(5, dirURL.getPath().indexOf("!")); //strip out only the JAR file
-	        JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
-	        Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
-	        Set<String> result = new HashSet<String>(); //avoid duplicates in case it is a subdirectory
-	        while(entries.hasMoreElements()) {
-	          String name = entries.nextElement().getName();
-	          if (name.startsWith(path)) { //filter according to the path
-	            String entry = name.substring(path.length());
-	            int checkSubdir = entry.indexOf("/");
-	            if (checkSubdir >= 0) {
-	              // if it is a subdirectory, we just return the directory name
-	              entry = entry.substring(0, checkSubdir);
-	            }
-	            result.add(entry);
-	          }
-	        }
-	        return result.toArray(new String[result.size()]);
-	      } 
-
-	      throw new UnsupportedOperationException("Cannot list files for URL "+dirURL);
-	  }
 	
 	public Clip loadClip(File audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
@@ -326,7 +270,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)buttonPanel.getComponent(2)).addTabTotal(-1);
+					((Runds)tabataPanel.getComponent(2)).addTabTotal(-1);
 					repaint();
 				}
 			});
@@ -336,7 +280,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)buttonPanel.getComponent(2)).addTabTotal(1);
+					((Runds)tabataPanel.getComponent(2)).addTabTotal(1);
 					repaint();
 				}
 			});
@@ -346,7 +290,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)buttonPanel.getComponent(2)).addTotal(-1);
+					((Runds)tabataPanel.getComponent(2)).addTotalRounds(-1);
 					repaint();
 				}
 			});
@@ -356,7 +300,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)buttonPanel.getComponent(2)).addTotal(1);
+					((Runds)tabataPanel.getComponent(2)).addTotalRounds(1);
 					repaint();
 				}
 			});
@@ -413,7 +357,7 @@ public class Main extends JFrame {
 			public void paintComponent(Graphics g) {
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
 				g.setFont(sansbold25);
-				g.drawString("Tabats:"+((Runds)buttonPanel.getComponent(2)).getTabsTotal(), 0, 25);
+				g.drawString("Tabats:"+((Runds)tabataPanel.getComponent(2)).getTabTotal(), 0, 25);
 			}
 			
 			@Override
@@ -430,7 +374,7 @@ public class Main extends JFrame {
 			public void paintComponent(Graphics g) {
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
 				g.setFont(sansbold25);
-				g.drawString("Runds:"+((Runds)buttonPanel.getComponent(2)).getTotal(), 0, 25);
+				g.drawString("Runds:"+((Runds)tabataPanel.getComponent(2)).getTotalRounds(), 0, 25);
 			}
 			
 			@Override
@@ -454,18 +398,17 @@ public class Main extends JFrame {
 			if(flag) {
 				t=new Thread(r);
 				t.start();
-				((JButton)buttonPanel.getComponent(0)).setText("Pause");
+				((JButton)tabataPanel.getComponent(0)).setText("Pause");
 				flag=false;
 			}else {
-				((JButton)buttonPanel.getComponent(0)).setText("Start");
-				buttonPanel.setColors(Color.WHITE, Color.BLUE);
-				buttonPanel.repaint();
+				((JButton)tabataPanel.getComponent(0)).setText("Start");
+				tabataPanel.setColors(Color.WHITE, Color.BLUE);
+				tabataPanel.repaint();
 				t.interrupt();
 				flag=true;
 			}
 		}
 	}
-	
 	
 	public class Timer implements Runnable{
 		private int current;
@@ -483,7 +426,7 @@ public class Main extends JFrame {
 				int rand;
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
-						((Runds)buttonPanel.getComponent(2)).setTab(0);
+						((Runds)tabataPanel.getComponent(2)).setTab(0);
 						lastFrameT=timerClip.getFrameLength();
 						reset=false;
 					}
@@ -493,9 +436,9 @@ public class Main extends JFrame {
 						if(!runed)
 							current=10;
 						runed=true;
-						((Countdown) buttonPanel.getComponent(1)).setSec(current);
-						buttonPanel.setColors(Color.WHITE, Color.BLUE);
-						buttonPanel.repaint();
+						((Countdown) tabataPanel.getComponent(1)).setSec(current);
+						tabataPanel.setColors(Color.WHITE, Color.BLUE);
+						tabataPanel.repaint();
 						if(played) {
 							do {
 								rand=rn.nextInt(soundsPaths.size());
@@ -513,9 +456,9 @@ public class Main extends JFrame {
 								playMusic(currClip);
 							TimeUnit.SECONDS.sleep(1);
 							current--;
-							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-							buttonPanel.getComponent(1).repaint();
-							buttonPanel.getComponent(2).repaint();
+							((Countdown) tabataPanel.getComponent(1)).addSec(-1);
+							tabataPanel.getComponent(1).repaint();
+							tabataPanel.getComponent(2).repaint();
 						}	
 						before=true;
 						runed=false;
@@ -523,8 +466,8 @@ public class Main extends JFrame {
 					
 					if(!started) {
 						gainControl.setValue(5.0f);
-						((Runds) buttonPanel.getComponent(2)).addCurr(1);
-						((Countdown) buttonPanel.getComponent(1)).setSec(20);
+						((Runds) tabataPanel.getComponent(2)).addRound(1);
+						((Countdown) tabataPanel.getComponent(1)).setSec(20);
 						current=20;
 						started=true;
 					}
@@ -536,15 +479,15 @@ public class Main extends JFrame {
 					if(!rest) {
 						if(!currClip.isRunning()) 
 							playMusic(currClip);
-						buttonPanel.setColors(Color.WHITE, Color.GREEN);
-						buttonPanel.repaint();
+						tabataPanel.setColors(Color.WHITE, Color.GREEN);
+						tabataPanel.repaint();
 						
 						while(current>0) {
 							TimeUnit.SECONDS.sleep(1);
 							current--;
-							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-							buttonPanel.getComponent(1).repaint();
-							buttonPanel.getComponent(2).repaint();
+							((Countdown) tabataPanel.getComponent(1)).addSec(-1);
+							tabataPanel.getComponent(1).repaint();
+							tabataPanel.getComponent(2).repaint();
 						}	
 						pauseMusic(timerClip);
 						lastFrameT=timerClip.getFrameLength();
@@ -560,14 +503,14 @@ public class Main extends JFrame {
 						playMusic(timerClip);
 						System.out.println("5");
 					}
-					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) 
+					if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) 
 						pauseMusic(timerClip);
 					
 					
 					
-					((Countdown) buttonPanel.getComponent(1)).setSec(current);
-					buttonPanel.setColors(Color.WHITE, Color.RED);
-					buttonPanel.repaint();
+					((Countdown) tabataPanel.getComponent(1)).setSec(current);
+					tabataPanel.setColors(Color.WHITE, Color.RED);
+					tabataPanel.repaint();
 					gainControl.setValue(-15.0f);
 					
 					while(current>0) {	
@@ -595,23 +538,23 @@ public class Main extends JFrame {
 							
 						TimeUnit.SECONDS.sleep(1);
 						current--;
-						((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-						buttonPanel.getComponent(1).repaint();
-						buttonPanel.getComponent(2).repaint();
+						((Countdown) tabataPanel.getComponent(1)).addSec(-1);
+						tabataPanel.getComponent(1).repaint();
+						tabataPanel.getComponent(2).repaint();
 					}
-					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) 
+					if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) 
 						pauseMusic(timerClip);
 					
-					if(((Runds)buttonPanel.getComponent(2)).getCurr()==((Runds)buttonPanel.getComponent(2)).getTotal()) {
+					if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) {
 						restRound=true;
-						((Runds) buttonPanel.getComponent(2)).addTab(1); 
-						((Runds) buttonPanel.getComponent(2)).setCurr(0);
-						buttonPanel.setColors(Color.WHITE, Color.BLUE);
-						buttonPanel.repaint();
+						((Runds) tabataPanel.getComponent(2)).addTab(1); 
+						((Runds) tabataPanel.getComponent(2)).setRound(0);
+						tabataPanel.setColors(Color.WHITE, Color.BLUE);
+						tabataPanel.repaint();
 		
 						pauseMusic(timerClip);
 						current=20;
-						((Countdown) buttonPanel.getComponent(1)).setSec(current);
+						((Countdown) tabataPanel.getComponent(1)).setSec(current);
 						while(current>0) {
 							if(current==10&&restRound) {
 								playMusic(timerClip);
@@ -632,9 +575,9 @@ public class Main extends JFrame {
 							}
 							TimeUnit.SECONDS.sleep(1);
 							current--;
-							((Countdown) buttonPanel.getComponent(1)).addSec(-1);
-							buttonPanel.getComponent(1).repaint();
-							buttonPanel.getComponent(2).repaint();
+							((Countdown) tabataPanel.getComponent(1)).addSec(-1);
+							tabataPanel.getComponent(1).repaint();
+							tabataPanel.getComponent(2).repaint();
 						}	
 						played=true;
 						restRound=false;
@@ -644,11 +587,11 @@ public class Main extends JFrame {
 					started=false;
 					rest=false;
 					
-					if(((Runds)buttonPanel.getComponent(2)).getTabs()==((Runds)buttonPanel.getComponent(2)).getTabsTotal()) {
+					if(((Runds)tabataPanel.getComponent(2)).getTab()==((Runds)tabataPanel.getComponent(2)).getTabTotal()) {
 						pauseMusic(currClip);
 						pauseMusic(timerClip);
-						buttonPanel.setColors(Color.WHITE, Color.BLUE);
-						buttonPanel.repaint();
+						tabataPanel.setColors(Color.WHITE, Color.BLUE);
+						tabataPanel.repaint();
 						reset=true;
 						before=false;
 						break;

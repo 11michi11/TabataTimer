@@ -14,6 +14,7 @@ public class Countdown extends JComponent{
 	public Countdown(int sec) {
 		this.sec=sec;
 	}
+	
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D)g;
@@ -36,6 +37,10 @@ public class Countdown extends JComponent{
 	
 	public void setSec(int x) {
 		this.sec=x;
+	}
+	
+	public int getSec() {
+		return this.sec;
 	}
 	
 	public void addSec(int x) {

@@ -7,15 +7,16 @@ import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 
 public class Runds extends JComponent{
-	private int curr=0;
+	private int round=0;
+	private int totalRounds;
 	private int tabats=0;
 	private int tabatsTotal;
-	private int total;
+	
 	private static final int DEFAULT_WIDTH=950;
 	private static final int DEFAULT_HEIGHT=200;
 	
-	public Runds(int total, int tabatsTotal) {
-		this.total=total;
+	public Runds(int totalRounds, int tabatsTotal) {
+		this.totalRounds=totalRounds;
 		this.tabatsTotal=tabatsTotal;
 	}
 	
@@ -31,7 +32,7 @@ public class Runds extends JComponent{
 		bounds.setRect((int)(getWidth()-stringWidth)/2, (int)(getHeight()-stringHeight)/2, stringWidth, stringHeight);
 		g2.setFont(sansbold80);
 		//g2.draw(bounds);
-		g2.drawString("Rund:"+curr+"/"+total+" Tabaty:"+tabats+"/"+tabatsTotal, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
+		g2.drawString("Rund:"+round+"/"+totalRounds+" Tabaty:"+tabats+"/"+tabatsTotal, (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
 	}
 	
 	@Override
@@ -39,17 +40,31 @@ public class Runds extends JComponent{
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
 	}
 	
-	public void setCurr(int x) {
-		this.curr=x;
+	public void setRound(int x) {
+		this.round=x;
 	}
 	
-	public int getCurr() {
-		return this.curr;
+	public void addRound(int x) {
+		this.round+=x;
 	}
 	
-	public void addCurr(int x) {
-		this.curr+=x;
+	public int getRound() {
+		return this.round;
 	}
+	
+	
+	public void setTotalRounds(int x) {
+		this.totalRounds=x;
+	}
+	
+	public int getTotalRounds() {
+		return totalRounds;
+	}
+	
+	public void addTabTotal(int x) {
+		this.tabatsTotal+=x;
+	}
+	
 	
 	public void setTab(int x) {
 		this.tabats=x;
@@ -59,23 +74,20 @@ public class Runds extends JComponent{
 		this.tabats+=x; 
 	}
 	
-	public int getTabs() {
+	public int getTab() {
 		return this.tabats;
 	}
 	
-	public int getTabsTotal() {
+	
+	public void setTabTotal(int x) {
+		this.tabatsTotal=x;
+	}
+	
+	public int getTabTotal() {
 		return this.tabatsTotal;
 	}
 	
-	public int getTotal() {
-		return total;
-	}
-	
-	public void addTabTotal(int x) {
-		this.tabatsTotal+=x;
-	}
-	
-	public void addTotal(int x) {
-		this.total+=x;
+	public void addTotalRounds(int x) {
+		this.totalRounds+=x;
 	}
 }
