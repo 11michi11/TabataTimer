@@ -23,6 +23,8 @@ public class Runds extends JComponent{
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D) g;
+		//Font size should be dependent of screen resolution, 
+				//because on res lower than Full HD this font is too big and doesn't fits in the window
 		Font sansbold80=new Font("SansSerif", Font.BOLD, 80);
 		FontRenderContext context=g2.getFontRenderContext();
 		Rectangle2D bounds=sansbold80.getStringBounds("Runds:8/8 Tabaty:0/10", context);

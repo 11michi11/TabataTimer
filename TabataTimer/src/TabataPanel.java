@@ -6,6 +6,7 @@ import java.awt.RenderingHints;
 import javax.swing.JPanel;
 
 public class TabataPanel extends JPanel{
+	//Colors for gradient background
 	private Color color1=Color.WHITE;
 	private Color color2=Color.YELLOW;
 	
@@ -16,8 +17,10 @@ public class TabataPanel extends JPanel{
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         int w=getWidth();
         int h=getHeight();
+        //Creating gradient color
 	    GradientPaint gp=new GradientPaint(0, 0, color1, 0, h, color2);
 	    g2.setPaint(gp);
+	    //Drawing rect witch is in fact a background for frame
 	    g2.fillRect(0, 0, w, h);
 	}
 	
