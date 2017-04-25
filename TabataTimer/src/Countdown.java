@@ -18,8 +18,11 @@ public class Countdown extends JComponent{
 	@Override
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D)g;
+		//Font size should be dependent of screen resolution, 
+		//because on res lower than Full HD this font is too big and doesn't fits in the window
 		Font sansbold250=new Font("SansSerif", Font.BOLD, 250);
 		FontRenderContext context=g2.getFontRenderContext();
+		//Creating bounds rectangle for debuging purpose
 		Rectangle2D bounds=sansbold250.getStringBounds("00", context);
 		double stringWidth=bounds.getWidth();
 		double stringHeight=bounds.getHeight();
@@ -27,6 +30,7 @@ public class Countdown extends JComponent{
 		bounds.setRect((int)(getWidth()-stringWidth)/2, (int)(getHeight()-stringHeight)/2, stringWidth, stringHeight);
 		g2.setFont(sansbold250);
 		//g2.draw(bounds);
+		//Drawing countdown
 		g2.drawString(Integer.toString(sec), (int)(getWidth()-stringWidth)/2, (int) ((getHeight()-stringHeight)/2+ascent));
 	}
 	
