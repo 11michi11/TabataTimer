@@ -450,7 +450,7 @@ public class Main extends JFrame {
 	//And there is where the HELL begins. This is rubbish and must by rewrited ASAP.
 	//But it's working somehow, with bugs of course.
 	//I really don't recommend looking into it, because it will cause headache. 
-	//Timer thread is responsible changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
+	//Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
 	//That means it plays and stops music when needed, changes background color, changes countdown, rounds and tabats values.
 	//I won't comment it, because when I was writing it, only I and God knows what is going on. Now, only God knows.
 	//But it will be rewrtied so don't worry
@@ -573,6 +573,7 @@ public class Main extends JFrame {
 								rand=rn.nextInt(soundsNames.size());
 							}while(musicIndx==rand);
 							musicIndx=rand;
+							System.out.println(soundsNames.get(musicIndx));
 							audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsNames.get(musicIndx)).getFile());
 							currClip=loadClip(audioFile, false);
 							gainControl.setValue(-15.0f);
@@ -611,6 +612,7 @@ public class Main extends JFrame {
 									rand=rn.nextInt(soundsNames.size());
 								}while(musicIndx==rand);
 								musicIndx=rand;
+								System.out.println(soundsNames.get(musicIndx));
 								audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsNames.get(musicIndx)).getFile());
 								currClip=loadClip(audioFile, false);
 								gainControl.setValue(-15.0f);
