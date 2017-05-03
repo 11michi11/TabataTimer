@@ -22,7 +22,7 @@ public class Countdown extends JComponent{
 		//because on res lower than Full HD this font is too big and doesn't fits in the window
 		Font sansbold250=new Font("SansSerif", Font.BOLD, 250);
 		FontRenderContext context=g2.getFontRenderContext();
-		//Creating bounds rectangle for debuging purpose
+		//Creating bounds rectangle for debugging purpose
 		Rectangle2D bounds=sansbold250.getStringBounds("00", context);
 		double stringWidth=bounds.getWidth();
 		double stringHeight=bounds.getHeight();

@@ -17,7 +17,7 @@ public class TabataPanel extends JPanel{
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         int w=getWidth();
         int h=getHeight();
-        //Creating gradient color
+        //Creating gradient colour
 	    GradientPaint gp=new GradientPaint(0, 0, color1, 0, h, color2);
 	    g2.setPaint(gp);
 	    //Drawing rect witch is in fact a background for frame
