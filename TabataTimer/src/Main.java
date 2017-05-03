@@ -477,6 +477,50 @@ public class Main extends JFrame {
 		public void run() {
 			try{
 				int rand;
+				/*	WORK IN PROGRESS
+				String actionToDo="";
+				
+					while(!Thread.currentThread().isInterrupted()) {
+						switch(actionToDo) {
+							case "reset":{
+								((Runds)tabataPanel.getComponent(2)).setTab(0);
+								lastFrameT=timerClip.getFrameLength();
+								actionToDo="before";
+								break;
+							}
+							case "before":{
+								if(!runed) {
+									seconds=10;
+									runed=true;
+								}
+								
+								tabataPanel.setColors(Color.WHITE, Color.BLUE);
+								tabataPanel.repaint();
+								
+								playMusic(timerClip);
+								
+								if(played) {
+									do {
+										rand=rn.nextInt(soundsNames.size());
+									}while(musicIndx==rand);
+									musicIndx=rand;
+									System.out.println(soundsNames.get(musicIndx));
+									audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsNames.get(musicIndx)).getFile());
+									currentClip=loadClip(audioFile, false);
+									played=false;
+								}
+								
+								gainControl.setValue(-15.0f);
+								
+								before=true;
+								runed=false;
+							}
+					 }
+				 }
+				  
+				  
+				  
+				 */
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)tabataPanel.getComponent(2)).setTab(0);
