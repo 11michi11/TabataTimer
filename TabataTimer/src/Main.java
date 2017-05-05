@@ -465,6 +465,7 @@ public class Main extends JFrame {
 	//But it will be rewrtied so don't worry
 	public class Timer implements Runnable{
 		private int seconds;
+		private boolean changeMusic;
 		private boolean started=false;
 		private boolean rest=false;
 		private boolean before=false;
@@ -477,18 +478,17 @@ public class Main extends JFrame {
 		public void run() {
 			try{
 				int rand;
-				/*	WORK IN PROGRESS
+			//	/*	WORK IN PROGRESS 
 				String actionToDo="";
 				
 					while(!Thread.currentThread().isInterrupted()) {
 						switch(actionToDo) {
-							case "reset":{
+							case "reset":
 								((Runds)tabataPanel.getComponent(2)).setTab(0);
 								lastFrameT=timerClip.getFrameLength();
 								actionToDo="before";
 								break;
-							}
-							case "before":{
+							case "before":
 								if(!runed) {
 									seconds=10;
 									runed=true;
@@ -514,13 +514,101 @@ public class Main extends JFrame {
 								
 								before=true;
 								runed=false;
+								
+								actionToDo="exercise";
+								
+								break;
+							case "exercise":
+								gainControl.setValue(5.0f);
+								((Runds) tabataPanel.getComponent(2)).addRound(1);
+								seconds=20;
+								
+								actionToDo="rest";
+								
+								break;
+							case "rest":
+								if(!currentClip.isRunning()) 
+									playMusic(currentClip);
+								tabataPanel.setColors(Color.WHITE, Color.GREEN);
+								tabataPanel.repaint();
+								
+								changeMusic=true;
+								pauseMusic(timerClip);
+								lastFrameT=timerClip.getFrameLength();
+								playMusic(timerClip);
+								seconds=10;
+								
+								actionToDo="exercise";
+								
+								break;
+							case "restRound":
+								pauseMusic(timerClip);
+								
+								((Runds) tabataPanel.getComponent(2)).addTab(1); 
+								((Runds) tabataPanel.getComponent(2)).setRound(0);
+								tabataPanel.setColors(Color.WHITE, Color.BLUE);
+								tabataPanel.repaint();
+								
+								seconds=20;
+								changeMusic=true;
+								gainControl.setValue(-15.0f);
+										
+								break;
+							case "endRound":
+								//WORK IN PROGRESS - will be added later
+								//play end music - Bill Conti - Gonna Fly Now, 
+								break;
+							default:
+								System.out.println("Something wrong happend!!!");
+								break;	
+						}
+						
+						while(seconds>0) {
+							TimeUnit.SECONDS.sleep(1);
+							seconds--;
+							((Countdown) tabataPanel.getComponent(1)).addSec(-1);
+							tabataPanel.getComponent(1).repaint();
+							tabataPanel.getComponent(2).repaint();
+							
+							if(changeMusic&&seconds==5) {
+								pauseMusic(currentClip);
+								do {
+									rand=rn.nextInt(soundsNames.size());
+								}while(musicIndx==rand);
+								musicIndx=rand;
+								System.out.println(soundsNames.get(musicIndx));
+								audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsNames.get(musicIndx)).getFile());
+								currentClip=loadClip(audioFile, false);
+								playMusic(currentClip);
 							}
-					 }
-				 }
+							
+							
+							if(actionToDo.equals("restRound")&&seconds==10)
+								playMusic(timerClip);
+							
+							
+						}
+						
+						//end action chcecks
+						
+						
+						//check if 
+						if(((Runds)tabataPanel.getComponent(2)).getTab()==((Runds)tabataPanel.getComponent(2)).getTabTotal()) {
+							
+						}
+						
+						
+						//check if current tabata is done, and if yes, go to rest round
+						if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) {
+							
+						}
+							
+						
+					}
 				  
 				  
 				  
-				 */
+				// */
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)tabataPanel.getComponent(2)).setTab(0);
