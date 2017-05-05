@@ -478,7 +478,7 @@ public class Main extends JFrame {
 		public void run() {
 			try{
 				int rand;
-			//	/*	WORK IN PROGRESS 
+				/*	WORK IN PROGRESS 
 				String actionToDo="";
 				
 					while(!Thread.currentThread().isInterrupted()) {
@@ -608,7 +608,7 @@ public class Main extends JFrame {
 				  
 				  
 				  
-				// */
+				 */
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)tabataPanel.getComponent(2)).setTab(0);
