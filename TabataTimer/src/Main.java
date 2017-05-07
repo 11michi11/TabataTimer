@@ -101,7 +101,7 @@ public class Main extends JFrame {
 		tabataPanel.add(count);
 		
 		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
-		Runds runds=new Runds(2,2);
+		Runds runds=new Runds(8,3);
 		runds.setOpaque(false);
 		tabataPanel.add(runds);
 		
