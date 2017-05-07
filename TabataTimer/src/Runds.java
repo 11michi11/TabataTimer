@@ -2,6 +2,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
@@ -11,13 +12,22 @@ public class Runds extends JComponent{
 	private int totalRounds;
 	private int tabats=0;
 	private int tabatsTotal;
+	private int fontSize=80;
 	
-	private static final int DEFAULT_WIDTH=950;
-	private static final int DEFAULT_HEIGHT=200;
+	private int DEFAULT_WIDTH=950;
+	private int DEFAULT_HEIGHT=200;
 	
 	public Runds(int totalRounds, int tabatsTotal) {
 		this.totalRounds=totalRounds;
 		this.tabatsTotal=tabatsTotal;
+		Toolkit kit=Toolkit.getDefaultToolkit();
+		Dimension screenSize=kit.getScreenSize();
+		int screenWidth=screenSize.width;
+		if(screenWidth!=1920) {
+			fontSize=60;
+			DEFAULT_WIDTH=800;
+			DEFAULT_HEIGHT=150;
+		}
 	}
 	
 	@Override
@@ -25,7 +35,7 @@ public class Runds extends JComponent{
 		Graphics2D g2=(Graphics2D) g;
 		//Font size should be dependent of screen resolution, 
 				//because on res lower than Full HD this font is too big and doesn't fits in the window
-		Font sansbold80=new Font("SansSerif", Font.BOLD, 80);
+		Font sansbold80=new Font("SansSerif", Font.BOLD, fontSize);
 		FontRenderContext context=g2.getFontRenderContext();
 		Rectangle2D bounds=sansbold80.getStringBounds("Runds:8/8 Tabaty:0/10", context);
 		double stringWidth=bounds.getWidth();

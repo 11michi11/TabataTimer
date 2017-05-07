@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
  * It also plays music for each round.
  * Training can be adjusted in settings menu. 
  * @author Micha³ Pompa
- * @version 1.9 
+ * @version Alpha 2.0 
  */
 
 public class Main extends JFrame {
@@ -79,6 +79,7 @@ public class Main extends JFrame {
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
+		//System.out.println(screenHeight+"x"+screenWidth);
 		//Setting size of the frame to square with a side of a half screen width
 		setSize(screenWidth/2, screenWidth/2);
 		//Setting frame relative location to null
@@ -188,14 +189,15 @@ public class Main extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setTitle("TabataTimer - Alfa 1.9");
+				frame.setTitle("TabataTimer - Alfa 2.0");
 				frame.setVisible(true);
 				
 				JOptionPane.showMessageDialog(frame,
 						"Welcom to Tabata Timer, your best training partner.\n"
 						+ "To start or pause Tabata press SPACE.\n"
 						+ "To setup your training, go to SETTINGS.\n"
-						+ "If you get lost, go to HELP\n",
+						+ "If you get lost, go to HELP\n"
+						+ "It is recommended use in fullscreen mode\n",
 						"Start Messege", JOptionPane.PLAIN_MESSAGE);
 				
 			}
@@ -206,7 +208,7 @@ public class Main extends JFrame {
 	public Clip loadClip(String audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
 		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(iStream);
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
         clip=(Clip)AudioSystem.getLine(info);
@@ -450,12 +452,13 @@ public class Main extends JFrame {
 		}
 	}
 	
-	//Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
-	//That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
+	
 		
 	//Enum for specific actions in tabata. Used to control program flow in switch
 	public enum ActionEnum {RESET, BEFORE, EXERCISE, REST, RESTROUND, ENDROUND};
-	
+
+	//Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
+	//That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
 	public class Timer implements Runnable{
 		private int seconds;
 		private boolean changeMusic;
