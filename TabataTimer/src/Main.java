@@ -101,7 +101,7 @@ public class Main extends JFrame {
 		tabataPanel.add(count);
 		
 		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
-		Runds runds=new Runds(8,2);
+		Runds runds=new Runds(2,2);
 		runds.setOpaque(false);
 		tabataPanel.add(runds);
 		
@@ -465,6 +465,7 @@ public class Main extends JFrame {
 	//And there is where the HELL begins. This is rubbish and must by rewrited ASAP.
 	//But it's working somehow, with bugs of course.
 	//I really don't recommend looking into it, because it will cause headache. 
+	
 	//Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
 	//That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
 	//I won't comment it, because when I was writing it, only I and God knows what is going on. Now, only God knows.
@@ -492,19 +493,22 @@ public class Main extends JFrame {
 		public void run() {
 			try{
 				int rand;
-				/*	WORK IN PROGRESS 
+				///*	WORK IN PROGRESS 
 				
 					while(!Thread.currentThread().isInterrupted()) {
-						//System.out.println(actionToDo);
+						System.out.println(paused+"%");
 						if(!paused) {
 							switch(actionToDo) {
 								case RESET:
-									System.out.println(actionToDo.toString());
+									System.out.println(actionToDo.toString()+"@");
+									((Runds) tabataPanel.getComponent(2)).setRound(0);
 									((Runds)tabataPanel.getComponent(2)).setTab(0);
 									lastFrameT=timerClip.getFrameLength();
 									seconds=0;
 									break;
 								case BEFORE:
+									((Runds) tabataPanel.getComponent(2)).setRound(0);
+									((Runds)tabataPanel.getComponent(2)).setTab(0);
 									System.out.println(actionToDo.toString());
 									if(!runed) {
 										seconds=10;
@@ -553,7 +557,7 @@ public class Main extends JFrame {
 									System.out.println(actionToDo.toString());
 									pauseMusic(timerClip);
 									
-									seconds=20;
+									seconds=30;
 									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
 									((Runds) tabataPanel.getComponent(2)).addTab(1); 
 									((Runds) tabataPanel.getComponent(2)).setRound(0);
@@ -566,7 +570,12 @@ public class Main extends JFrame {
 											
 									break;
 								case ENDROUND:
+									((Runds) tabataPanel.getComponent(2)).addTab(1);
+									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
+									tabataPanel.repaint();
 									System.out.println(actionToDo.toString());
+									actionToDo=ActionEnum.RESET;
+									Thread.currentThread().interrupt();
 									//WORK IN PROGRESS - will be added later
 									//play end music - Bill Conti - Gonna Fly Now, 
 									break;
@@ -597,12 +606,20 @@ public class Main extends JFrame {
 									tabataPanel.setColors(Color.WHITE, Color.BLUE);
 									break;
 								case RESTROUND:
+									if(seconds<=10)
+										playTimerClip=true;
+									changeMusic=true;
 									tabataPanel.setColors(Color.WHITE, Color.BLUE);
 									break;
 								case ENDROUND:
-									tabataPanel.setColors(Color.WHITE, Color.BLUE);
+									((Runds) tabataPanel.getComponent(2)).addTab(1);
+									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									break;
 								case RESET:
+									((Runds) tabataPanel.getComponent(2)).setRound(0);
+									((Runds)tabataPanel.getComponent(2)).setTab(0);
+									lastFrameT=timerClip.getFrameLength();
+									seconds=0;
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									break;
 								default:
@@ -621,7 +638,7 @@ public class Main extends JFrame {
 						}
 						
 						
-						
+						System.out.println(actionToDo+"while");
 						while(seconds>0) {
 							TimeUnit.SECONDS.sleep(1);
 							seconds--;
@@ -629,7 +646,9 @@ public class Main extends JFrame {
 							tabataPanel.getComponent(1).repaint();
 							tabataPanel.getComponent(2).repaint();
 							
-							if(changeMusic&&seconds==5) {
+							System.out.println(changeMusic+" "+seconds);
+							
+							if((changeMusic&&seconds==5)||(actionToDo==ActionEnum.RESTROUND&&seconds==25)||(actionToDo==ActionEnum.RESTROUND&&seconds==5)) {
 								if(currentClip!=null&&currentClip.isRunning())
 									pauseMusic(currentClip);
 								do {
@@ -645,8 +664,10 @@ public class Main extends JFrame {
 							}
 							
 							
-							if(actionToDo.equals("restRound")&&seconds==10)
+							
+							if(actionToDo==ActionEnum.RESTROUND&&seconds==10)
 								playMusic(timerClip);
+							
 							
 							
 						}
@@ -654,16 +675,22 @@ public class Main extends JFrame {
 						//choose next action
 						switch(actionToDo) {
 							case EXERCISE:
-								
-								//check if 
-								if(((Runds)tabataPanel.getComponent(2)).getTab()==((Runds)tabataPanel.getComponent(2)).getTabTotal()) {
-									
-								}
-								
-								
-								//check if current tabata is done, and if yes, go to rest round
+								//check if current tabata is done and if yes, go to rest round
 								if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) {
+									//check if training is done and if yes, go to reset
+									if(((Runds)tabataPanel.getComponent(2)).getTab()+1==((Runds)tabataPanel.getComponent(2)).getTabTotal()) {
+										pauseMusic(currentClip);
+										pauseMusic(timerClip);
+										tabataPanel.setColors(Color.WHITE, Color.YELLOW);
+										tabataPanel.repaint();
+										actionToDo=ActionEnum.ENDROUND;
+										break;
+									}
 									
+									tabataPanel.setColors(Color.WHITE, Color.BLUE);
+									tabataPanel.repaint();
+									actionToDo=ActionEnum.RESTROUND;
+									break;
 								}
 								
 								actionToDo=ActionEnum.REST;
@@ -695,8 +722,8 @@ public class Main extends JFrame {
 				  
 				  
 				  
-				 */
-				///*
+				// */
+				/*
 				while(!Thread.currentThread().isInterrupted()) {
 					if(reset) {
 						((Runds)tabataPanel.getComponent(2)).setTab(0);
