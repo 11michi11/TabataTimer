@@ -33,7 +33,7 @@ public class Main extends JFrame {
 	//Clips for playing music
     private Clip currentClip;	//currently playing song
     private Clip timerClip; //Tabata timer sounds 
-    private File audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
+    private String audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
     private FloatControl gainControl; // Variable responsible for volume control of currClip
     private JMenuBar menuBar;	//Menu bar for main frame
     private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing setup dialog box
@@ -47,7 +47,6 @@ public class Main extends JFrame {
 		//Loading names.txt form resources.
 		//names.txt contains names of songs, which are used as background music during training. Names are separated by space
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
-		System.out.println(namesStream+"#"); //for debug, sometimes namesStream was null
 		Scanner in=new Scanner(namesStream);
 		
 		
@@ -63,10 +62,10 @@ public class Main extends JFrame {
 		
 		try {
 			//Loading song to a File audioFile from resources
-			audioFile=new File(this.getClass().getClassLoader().getResource("resources/single_round_no_music.mp3").getFile());
+			audioFile="resources/single_round_no_music.wav";
 			//Creating Clip timerClip and preparing it to be playable in loadClip() function
 			timerClip=loadClip(audioFile,true);
-			System.out.println(timerClip);	//for debug, to check if Clip timerClip was created properly
+			//System.out.println(timerClip);	//for debug, to check if Clip timerClip was created properly
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -204,20 +203,10 @@ public class Main extends JFrame {
 	}
 	
 	//Function responsible for loading songs from File audioClip and creating and preparing Clip object
-	public Clip loadClip(File audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	public Clip loadClip(String audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
-		System.out.println(audioFile.getName()+"!"); //for debug, prints name of currently used file
-		//InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile.toString());
-		//System.out.println(iStream+" istream");
-		//AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
-		//^ Próby zmuszenia odczytu z pliku jar do dzia³ani.
-		//Próbowa³em zamiast przekazywaæ do fcji AudioSystem.getAudioInput() objektu File, przekazywaæ wczeœniej stworzony obiekt InputStream
-		//Ale to te¿ nie dzia³a³o.
-		
-		//Creating and preparing Clip clip for being playable
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED,
-				AudioSystem.getAudioInputStream(audioFile));
-		//^ this make MP3 work, by specifying Encoding
+		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
+		AudioInputStream audioStream=AudioSystem.getAudioInputStream(iStream);
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
         clip=(Clip)AudioSystem.getLine(info);
@@ -629,7 +618,7 @@ public class Main extends JFrame {
 								}while(musicIndx==rand);
 								musicIndx=rand;
 								System.out.println(soundsNames.get(musicIndx));
-								audioFile=new File(this.getClass().getClassLoader().getResource("resources/"+soundsNames.get(musicIndx)).getFile());
+								audioFile="resources/"+soundsNames.get(musicIndx);
 								currentClip=loadClip(audioFile, false);
 								gainControl.setValue(-15.0f);
 								playMusic(currentClip);
