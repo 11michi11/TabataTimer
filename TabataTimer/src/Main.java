@@ -13,6 +13,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.*;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 
 /**
@@ -41,6 +42,8 @@ public class Main extends JFrame {
     private int musicIndx=0; //index of currently playing song in soudsNames
 	private boolean completedAction=true; //flag used for checking if action is completed when Thread interrupted
 	final static Main frame=new Main(); //Main JFrame of application
+	private final Preferences root=Preferences.userRoot();
+	private final Preferences node=root.node("/TabataTimer");
 	
 	public Main() {
 		
@@ -101,7 +104,7 @@ public class Main extends JFrame {
 		tabataPanel.add(count);
 		
 		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
-		Runds runds=new Runds(8,3);
+		Runds runds=new Runds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		runds.setOpaque(false);
 		tabataPanel.add(runds);
 		
@@ -340,6 +343,17 @@ public class Main extends JFrame {
 			});
 			
 			
+			//Button for saving settings in preferences
+			JButton save=new JButton("SAVE");
+			save.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					node.putInt("rounds", ((Runds)tabataPanel.getComponent(2)).getTotalRounds());
+					node.putInt("tabats", ((Runds)tabataPanel.getComponent(2)).getTabTotal());					
+				}
+			});
+			
 			//Setting up GroupLayout for components in tabPanel
 			GroupLayout layout=new GroupLayout(tabPanel);
 			tabPanel.setLayout(layout);
@@ -356,7 +370,8 @@ public class Main extends JFrame {
 							.addComponent(subR)
 							.addComponent(addR))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER)
-							.addComponent(ok)));
+							.addComponent(ok)
+							.addComponent(save)));
 				
 			layout.setHorizontalGroup(layout.createSequentialGroup()
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
@@ -368,7 +383,8 @@ public class Main extends JFrame {
 							.addComponent(ok))
 					.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
 							.addComponent(addT)
-							.addComponent(addR)));
+							.addComponent(addR)
+							.addComponent(save)));
 			
 			add(tabPanel);
 			setLocationRelativeTo(owner);
