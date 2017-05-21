@@ -37,7 +37,8 @@ public class Main extends JFrame {
     private String audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
     private FloatControl gainControl; // Variable responsible for volume control of currClip
     private JMenuBar menuBar;	//Menu bar for main frame
-    private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing setup dialog box
+    private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
+    private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
     private ArrayList<String> soundsNames=new ArrayList<String>(); //ArrayList witch contains names of all the songs used during the training
     private int musicIndx=0; //index of currently playing song in soudsNames
 	private boolean completedAction=true; //flag used for checking if action is completed when Thread interrupted
@@ -104,7 +105,7 @@ public class Main extends JFrame {
 		tabataPanel.add(count);
 		
 		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
-		Runds runds=new Runds(node.getInt("rounds", 8),node.getInt("tabats", 3));
+		Rounds runds=new Rounds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		runds.setOpaque(false);
 		tabataPanel.add(runds);
 		
@@ -132,6 +133,19 @@ public class Main extends JFrame {
 				if(tabSetupDialog==null	)
 					tabSetupDialog=new TabSetupDialog(Main.this);
 				tabSetupDialog.setVisible(true);
+			}
+		});
+		
+		//Adding setup for fonts size for countdown and rounds display
+		JMenuItem fontSizeSetup=settingsMenu.add("Change font size");
+		fontSizeSetup.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(fontSizeSetupDialog==null)
+					fontSizeSetupDialog=new FontSizeSetupDialog(Main.this);
+				fontSizeSetupDialog.setVisible(true);
+				
 			}
 		});
 		
@@ -274,6 +288,38 @@ public class Main extends JFrame {
 		}
 		System.out.println("Pause:"+(clip==currentClip?"curr":"timer")); //for debug, print currently pausing clip
 	}
+	
+	//Class for font size setup dialog
+	public class FontSizeSetupDialog extends JDialog{
+		
+		public FontSizeSetupDialog(JFrame owner){
+			super(owner, "Font Size Setup", true);
+			JPanel fontPanel=new JPanel();
+			JLabel countdownFontSize=new JLabel(Integer.toString(((Countdown) tabataPanel.getComponent(1)).getFontSize()));
+			JLabel roundsFontSize=new JLabel(Integer.toString(((Rounds) tabataPanel.getComponent(2)).getFontSize()));
+			
+			fontPanel.add(countdownFontSize);
+			fontPanel.add(roundsFontSize);
+		}
+		
+		/*public class FontSizeComponent extends JComponent{
+			private final int DEFAULT_HEIGHT=150;
+			private final int DEFAULT_WIDTH=200;
+			
+			@Override
+			protected void paintComponent(Graphics g) {
+				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
+				g.setFont(sansbold25);
+				g.drawString("Countdown font size:"+((Rounds)tabataPanel.getComponent(2)).getTabTotal(), 0, 25);
+
+			}
+			
+			@Override
+			public Dimension getPreferredSize() {
+				return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+			}
+		}*/
+	}
 		
 	//Class responsible for dialog box used to set up Tabata
 	public class TabSetupDialog extends JDialog{
@@ -285,7 +331,7 @@ public class Main extends JFrame {
 			//Component responsible for adjusting number of tabats in training 
 			TabSetupComponent tabSetup=new TabSetupComponent();
 			//Component responsible for adjusting number of rounds in tabata
-			RundsSetupComponent rundsSetup=new RundsSetupComponent();
+			RoundsSetupComponent rundsSetup=new RoundsSetupComponent();
 			
 			//Button for decreasing tabats number
 			JButton subT=new JButton("-");
@@ -293,7 +339,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)tabataPanel.getComponent(2)).addTabTotal(-1);
+					((Rounds)tabataPanel.getComponent(2)).addTabTotal(-1);
 					repaint();
 				}
 			});
@@ -304,7 +350,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)tabataPanel.getComponent(2)).addTabTotal(1);
+					((Rounds)tabataPanel.getComponent(2)).addTabTotal(1);
 					repaint();
 				}
 			});
@@ -315,7 +361,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)tabataPanel.getComponent(2)).addTotalRounds(-1);
+					((Rounds)tabataPanel.getComponent(2)).addTotalRounds(-1);
 					repaint();
 				}
 			});
@@ -326,7 +372,7 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Runds)tabataPanel.getComponent(2)).addTotalRounds(1);
+					((Rounds)tabataPanel.getComponent(2)).addTotalRounds(1);
 					repaint();
 				}
 			});
@@ -349,8 +395,8 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					node.putInt("rounds", ((Runds)tabataPanel.getComponent(2)).getTotalRounds());
-					node.putInt("tabats", ((Runds)tabataPanel.getComponent(2)).getTabTotal());					
+					node.putInt("rounds", ((Rounds)tabataPanel.getComponent(2)).getTotalRounds());
+					node.putInt("tabats", ((Rounds)tabataPanel.getComponent(2)).getTabTotal());					
 				}
 			});
 			
@@ -403,7 +449,7 @@ public class Main extends JFrame {
 				//It should be dependent of the screen resolution
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
 				g.setFont(sansbold25);
-				g.drawString("Tabats:"+((Runds)tabataPanel.getComponent(2)).getTabTotal(), 0, 25);
+				g.drawString("Tabats:"+((Rounds)tabataPanel.getComponent(2)).getTabTotal(), 0, 25);
 			}
 			
 			@Override
@@ -413,7 +459,7 @@ public class Main extends JFrame {
 		}
 		
 		//Class responsible for component to adjust number of rounds in tabata
-		public class RundsSetupComponent extends JComponent{
+		public class RoundsSetupComponent extends JComponent{
 			//Setting default width and height for getPrefferedSize()
 			private static final int DEFAULT_WIDTH=115;
 			private static final int DEFAULT_HEIGHT=25;
@@ -424,7 +470,7 @@ public class Main extends JFrame {
 			public void paintComponent(Graphics g) {
 				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
 				g.setFont(sansbold25);
-				g.drawString("Runds:"+((Runds)tabataPanel.getComponent(2)).getTotalRounds(), 0, 25);
+				g.drawString("Runds:"+((Rounds)tabataPanel.getComponent(2)).getTotalRounds(), 0, 25);
 			}
 			
 			@Override
@@ -492,14 +538,14 @@ public class Main extends JFrame {
 						if(!paused) {
 							switch(actionToDo) {
 								case RESET:
-									((Runds) tabataPanel.getComponent(2)).setRound(0);
-									((Runds)tabataPanel.getComponent(2)).setTab(0);
+									((Rounds) tabataPanel.getComponent(2)).setRound(0);
+									((Rounds)tabataPanel.getComponent(2)).setTab(0);
 									lastFrameT=timerClip.getFrameLength();
 									seconds=0;
 									break;
 								case BEFORE:
-									((Runds) tabataPanel.getComponent(2)).setRound(0);
-									((Runds)tabataPanel.getComponent(2)).setTab(0);
+									((Rounds) tabataPanel.getComponent(2)).setRound(0);
+									((Rounds)tabataPanel.getComponent(2)).setTab(0);
 									lastFrameT=timerClip.getFrameLength();
 									System.out.println(actionToDo.toString());
 									if(!runed) {
@@ -519,7 +565,7 @@ public class Main extends JFrame {
 									break;
 								case EXERCISE:
 									gainControl.setValue(5.0f);
-									((Runds) tabataPanel.getComponent(2)).addRound(1);
+									((Rounds) tabataPanel.getComponent(2)).addRound(1);
 									tabataPanel.setColors(Color.WHITE, Color.GREEN);
 									seconds=20;
 									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
@@ -547,8 +593,8 @@ public class Main extends JFrame {
 									
 									seconds=30;
 									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-									((Runds) tabataPanel.getComponent(2)).addTab(1); 
-									((Runds) tabataPanel.getComponent(2)).setRound(0);
+									((Rounds) tabataPanel.getComponent(2)).addTab(1); 
+									((Rounds) tabataPanel.getComponent(2)).setRound(0);
 									tabataPanel.setColors(Color.WHITE, Color.BLUE);
 									tabataPanel.repaint();
 									playTimerClip=false;
@@ -558,7 +604,7 @@ public class Main extends JFrame {
 											
 									break;
 								case ENDROUND:
-									((Runds) tabataPanel.getComponent(2)).addTab(1);
+									((Rounds) tabataPanel.getComponent(2)).addTab(1);
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									tabataPanel.repaint();
 									actionToDo=ActionEnum.RESET;
@@ -597,12 +643,12 @@ public class Main extends JFrame {
 									tabataPanel.setColors(Color.WHITE, Color.BLUE);
 									break;
 								case ENDROUND:
-									((Runds) tabataPanel.getComponent(2)).addTab(1);
+									((Rounds) tabataPanel.getComponent(2)).addTab(1);
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									break;
 								case RESET:
-									((Runds) tabataPanel.getComponent(2)).setRound(0);
-									((Runds)tabataPanel.getComponent(2)).setTab(0);
+									((Rounds) tabataPanel.getComponent(2)).setRound(0);
+									((Rounds)tabataPanel.getComponent(2)).setTab(0);
 									lastFrameT=timerClip.getFrameLength();
 									seconds=0;
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
@@ -653,9 +699,9 @@ public class Main extends JFrame {
 						switch(actionToDo) {
 							case EXERCISE:
 								//check if current tabata is done and if yes, go to rest round
-								if(((Runds)tabataPanel.getComponent(2)).getRound()==((Runds)tabataPanel.getComponent(2)).getTotalRounds()) {
+								if(((Rounds)tabataPanel.getComponent(2)).getRound()==((Rounds)tabataPanel.getComponent(2)).getTotalRounds()) {
 									//check if training is done and if yes, go to reset
-									if(((Runds)tabataPanel.getComponent(2)).getTab()+1==((Runds)tabataPanel.getComponent(2)).getTabTotal()) {
+									if(((Rounds)tabataPanel.getComponent(2)).getTab()+1==((Rounds)tabataPanel.getComponent(2)).getTabTotal()) {
 										pauseMusic(currentClip);
 										pauseMusic(timerClip);
 										tabataPanel.setColors(Color.WHITE, Color.YELLOW);

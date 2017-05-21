@@ -50,6 +50,14 @@ public class Countdown extends JComponent{
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
 	}
 	
+	public void setFontSize(int x) {
+		this.fontSize=x;
+	}
+	
+	public int getFontSize() {
+		return this.fontSize;
+	}
+	
 	public void setSec(int x) {
 		this.sec=x;
 	}

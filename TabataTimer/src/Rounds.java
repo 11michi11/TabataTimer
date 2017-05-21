@@ -7,7 +7,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 
-public class Runds extends JComponent{
+public class Rounds extends JComponent{
 	private int round=0;
 	private int totalRounds;
 	private int tabats=0;
@@ -17,7 +17,7 @@ public class Runds extends JComponent{
 	private int DEFAULT_WIDTH=950;
 	private int DEFAULT_HEIGHT=200;
 	
-	public Runds(int totalRounds, int tabatsTotal) {
+	public Rounds(int totalRounds, int tabatsTotal) {
 		this.totalRounds=totalRounds;
 		this.tabatsTotal=tabatsTotal;
 		Toolkit kit=Toolkit.getDefaultToolkit();
@@ -50,6 +50,14 @@ public class Runds extends JComponent{
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(DEFAULT_WIDTH,DEFAULT_HEIGHT);
+	}
+	
+	public void setFontSize(int x) {
+		this.fontSize=x;
+	}
+	
+	public int getFontSize() {
+		return this.fontSize;
 	}
 	
 	public void setRound(int x) {
