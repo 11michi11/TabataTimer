@@ -375,7 +375,11 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Rounds)tabataPanel.getComponent(2)).addTabTotal(-1);
+					if(((Rounds)tabataPanel.getComponent(2)).getTabTotal()>1) {
+						((Rounds)tabataPanel.getComponent(2)).addTabTotal(-1);
+					}else {
+						JOptionPane.showMessageDialog(tabSetupDialog, "Number of tabats must be grater than 0!");
+					}
 					repaint();
 				}
 			});
@@ -397,7 +401,11 @@ public class Main extends JFrame {
 				
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					((Rounds)tabataPanel.getComponent(2)).addTotalRounds(-1);
+					if(((Rounds)tabataPanel.getComponent(2)).getTotalRounds()>1) {
+						((Rounds)tabataPanel.getComponent(2)).addTotalRounds(-1);
+					}else {
+						JOptionPane.showMessageDialog(tabSetupDialog, "Number of rounds must be grater than 0!");
+					}
 					repaint();
 				}
 			});
