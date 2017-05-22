@@ -294,31 +294,67 @@ public class Main extends JFrame {
 		
 		public FontSizeSetupDialog(JFrame owner){
 			super(owner, "Font Size Setup", true);
+			//Creating panel for components and labels
 			JPanel fontPanel=new JPanel();
-			JLabel countdownFontSize=new JLabel(Integer.toString(((Countdown) tabataPanel.getComponent(1)).getFontSize()));
-			JLabel roundsFontSize=new JLabel(Integer.toString(((Rounds) tabataPanel.getComponent(2)).getFontSize()));
+			JLabel countdownFontSizeLabel=new JLabel("Countdown font size: ");
+			JLabel roundsFontSizeLabel=new JLabel("Rounds font size: ");
 			
-			fontPanel.add(countdownFontSize);
-			fontPanel.add(roundsFontSize);
+			//Setting font for labels
+			countdownFontSizeLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+			roundsFontSizeLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+			
+			//Creating texts fields for adjusting fonts size
+			JTextField countdownTextField=new JTextField(Integer.toString(((Countdown) tabataPanel.getComponent(1)).getFontSize()), 2);
+			JTextField roundsTextField=new JTextField(Integer.toString(((Rounds) tabataPanel.getComponent(2)).getFontSize()), 2);
+			
+			//Button for saving changes
+			JButton save=new JButton("Save");
+			save.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					String countdownSizeString=countdownTextField.getText().trim();
+					String roundsSizeString=roundsTextField.getText().trim();
+					
+					((Countdown) tabataPanel.getComponent(1)).setFontSize(Integer.valueOf(countdownSizeString));
+					((Rounds) tabataPanel.getComponent(2)).setFontSize(Integer.valueOf(roundsSizeString));
+					node.putInt("countdownFontSize", Integer.valueOf(countdownSizeString));
+					node.putInt("roundsFontSize", Integer.valueOf(roundsSizeString));
+					setVisible(false);	
+					frame.paintComponents(frame.getGraphics());
+				}
+			});
+			
+			//Button for restoring default settings
+			JButton defaultSet=new JButton("Default");
+			defaultSet.addActionListener(new ActionListener() {
+				
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					countdownTextField.setText("250");
+					roundsTextField.setText("80");
+					
+					((Countdown) tabataPanel.getComponent(1)).setFontSize(250);
+					((Rounds) tabataPanel.getComponent(2)).setFontSize(80);
+					node.putInt("countdownFontSize", 250);
+					node.putInt("roundsFontSize", 80);
+				}
+			});
+			
+			//Setting grid layout
+			fontPanel.setLayout(new GridLayout(3, 2));
+			
+			fontPanel.add(countdownFontSizeLabel);
+			fontPanel.add(countdownTextField);
+			fontPanel.add(roundsFontSizeLabel);
+			fontPanel.add(roundsTextField);
+			fontPanel.add(defaultSet);
+			fontPanel.add(save);
+			
+			add(fontPanel);
+			setLocationRelativeTo(owner);
+			pack();
 		}
-		
-		/*public class FontSizeComponent extends JComponent{
-			private final int DEFAULT_HEIGHT=150;
-			private final int DEFAULT_WIDTH=200;
-			
-			@Override
-			protected void paintComponent(Graphics g) {
-				Font sansbold25=new Font("SansSerif", Font.BOLD, 25);
-				g.setFont(sansbold25);
-				g.drawString("Countdown font size:"+((Rounds)tabataPanel.getComponent(2)).getTabTotal(), 0, 25);
-
-			}
-			
-			@Override
-			public Dimension getPreferredSize() {
-				return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-			}
-		}*/
 	}
 		
 	//Class responsible for dialog box used to set up Tabata
@@ -390,7 +426,7 @@ public class Main extends JFrame {
 			
 			
 			//Button for saving settings in preferences
-			JButton save=new JButton("SAVE");
+			JButton save=new JButton("Save");
 			save.addActionListener(new ActionListener() {
 				
 				@Override
