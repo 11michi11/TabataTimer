@@ -22,7 +22,7 @@ import java.util.prefs.Preferences;
  * It also plays music for each round.
  * Training can be adjusted in settings menu. 
  * @author Micha³ Pompa
- * @version Alpha 2.0 
+ * @version Alpha 2.1 
  */
 
 
