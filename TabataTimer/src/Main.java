@@ -25,6 +25,8 @@ import java.util.prefs.Preferences;
  * @version Alpha 2.0 
  */
 
+
+
 public class Main extends JFrame {
 	//Main panel for components used for Tabata functionality, like countdown and rounds
 	private TabataPanel tabataPanel;
