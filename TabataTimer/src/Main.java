@@ -26,16 +26,18 @@ import java.util.prefs.Preferences;
  */
 
 
-
+// Bill_Conti_-_Gonna_Fly_Now.wav
 public class Main extends JFrame {
 	//Main panel for components used for Tabata functionality, like countdown and rounds
 	private TabataPanel tabataPanel;
 	//Variables used for playing music. They are used for storing last played frame of songs or timer sound.
 	private int lastFrame;
 	private int lastFrameT;
+	private int lastFrameE;
 	//Clips for playing music
     private Clip currentClip;	//currently playing song
     private Clip timerClip; //Tabata timer sounds 
+    private Clip endingClip; //clip for ending music (Bill Contii - Gonna Fly Now)
     private String audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
     private FloatControl gainControl; // Variable responsible for volume control of currClip
     private JMenuBar menuBar;	//Menu bar for main frame
@@ -68,9 +70,10 @@ public class Main extends JFrame {
 		
 		try {
 			//Loading song to a File audioFile from resources
+			endingClip=loadClip("resources/Bill_Conti_-_Gonna_Fly_Now.wav", false);
 			audioFile="resources/single_round_no_music.wav";
 			//Creating Clip timerClip and preparing it to be playable in loadClip() function
-			timerClip=loadClip(audioFile,true);
+			timerClip=loadClip(audioFile, false);
 			//System.out.println(timerClip);	//for debug, to check if Clip timerClip was created properly
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
@@ -224,7 +227,7 @@ public class Main extends JFrame {
 	}
 	
 	//Function responsible for loading songs from File audioClip and creating and preparing Clip object
-	public Clip loadClip(String audioFile, boolean timer) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	public Clip loadClip(String audioFile, boolean current) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
 		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
 		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));
@@ -232,7 +235,7 @@ public class Main extends JFrame {
         DataLine.Info info=new DataLine.Info(Clip.class, format);
         clip=(Clip)AudioSystem.getLine(info);
         clip.open(audioStream);
-        if(!timer)
+        if(current)
         	gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
         lastFrame=0;
         return clip;
@@ -251,6 +254,12 @@ public class Main extends JFrame {
 		}else if(clip==timerClip){  //case for timerClip
 			if (lastFrameT<clip.getFrameLength()) {
 	            clip.setFramePosition(lastFrameT);
+	        } else{
+	            clip.setFramePosition(0);
+	        }
+		}else if(clip==endingClip){  //case for endingClip
+			if (lastFrameE<clip.getFrameLength()) {
+	            clip.setFramePosition(lastFrameE);
 	        } else{
 	            clip.setFramePosition(0);
 	        }
@@ -287,8 +296,17 @@ public class Main extends JFrame {
 	        	//When music isn't playing, prints that message 
 	        	System.out.println("Music isn't playing");
 	        }
+		}else if(clip==endingClip){ //case for endingClip
+			if (clip.isRunning()) {
+				//Storing current frame position in lastFrame
+	            lastFrameE=clip.getFramePosition();
+	            clip.stop();
+	        }else {
+	        	//When music isn't playing, prints that message 
+	        	System.out.println("Music isn't playing");
+	        }
 		}
-		System.out.println("Pause:"+(clip==currentClip?"curr":"timer")); //for debug, print currently pausing clip
+		System.out.println("Pause:"+(clip==currentClip?"curr":clip==timerClip?"timer":"ending")); //for debug, print currently pausing clip
 	}
 	
 	//Class for font size setup dialog
@@ -559,8 +577,6 @@ public class Main extends JFrame {
 			}
 		}
 	}
-	
-	
 		
 	//Enum for specific actions in tabata. Used to control program flow in switch
 	public enum ActionEnum {RESET, BEFORE, EXERCISE, REST, RESTROUND, ENDROUND};
@@ -573,7 +589,9 @@ public class Main extends JFrame {
 		private boolean runed=false;
 		private boolean playTimerClip;
 		private boolean playCurrentClip;
+		private boolean playEndingClip;
 		private boolean paused=false;
+		private boolean reset=false;
 		private ActionEnum actionToDo=ActionEnum.BEFORE;
 		private Random rn=new Random();
 		
@@ -653,10 +671,11 @@ public class Main extends JFrame {
 									((Rounds) tabataPanel.getComponent(2)).addTab(1);
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									tabataPanel.repaint();
-									actionToDo=ActionEnum.RESET;
-									Thread.currentThread().interrupt();
+									//actionToDo=ActionEnum.RESET;
+									//Thread.currentThread().interrupt();
 									//WORK IN PROGRESS - will be added later
 									//play end music - Bill Conti - Gonna Fly Now, 
+									playEndingClip=true;
 									break;
 								default:
 									System.out.println(actionToDo.toString());
@@ -691,6 +710,7 @@ public class Main extends JFrame {
 								case ENDROUND:
 									((Rounds) tabataPanel.getComponent(2)).addTab(1);
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
+									playEndingClip=true;
 									break;
 								case RESET:
 									((Rounds) tabataPanel.getComponent(2)).setRound(0);
@@ -709,8 +729,15 @@ public class Main extends JFrame {
 								playMusic(timerClip);
 							if(currentClip!=null&&!currentClip.isRunning()&&playCurrentClip)
 								playMusic(currentClip);
+							if(endingClip!=null&&!endingClip.isRunning()&&playEndingClip)
+								playMusic(endingClip);
 														
 							paused=false;
+						}
+						
+						while(actionToDo==ActionEnum.ENDROUND) {
+							if(!endingClip.isRunning())
+								Thread.currentThread().interrupt();
 						}
 												
 						System.out.println(actionToDo+"in while");
@@ -730,7 +757,7 @@ public class Main extends JFrame {
 								musicIndx=rand;
 								System.out.println(soundsNames.get(musicIndx));
 								audioFile="resources/"+soundsNames.get(musicIndx);
-								currentClip=loadClip(audioFile, false);
+								currentClip=loadClip(audioFile, true);
 								gainControl.setValue(-15.0f);
 								playMusic(currentClip);
 								changeMusic=false;
@@ -774,7 +801,8 @@ public class Main extends JFrame {
 								actionToDo=ActionEnum.EXERCISE;
 								break;
 							case ENDROUND:
-								actionToDo=ActionEnum.RESET;
+								if(reset)
+									actionToDo=ActionEnum.RESET;
 								break;
 							case RESET:
 								actionToDo=ActionEnum.BEFORE;
