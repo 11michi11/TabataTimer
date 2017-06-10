@@ -19,13 +19,14 @@ public class MusicPlayer {
 	private FloatControl gainControl;
 	private Clip musicClip;
 	
-	public MusicPlayer(String songName) {
+	public MusicPlayer(String songName) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		this.songName=songName;
+		this.loadClip();
 	}
 	
-	public void loadClip(String audioFile) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	public void loadClip() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
-		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
+		InputStream iStream=Main.class.getClassLoader().getResourceAsStream("resources/"+songName);
 		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));
         AudioFormat format=audioStream.getFormat();
         DataLine.Info info=new DataLine.Info(Clip.class, format);
@@ -35,6 +36,44 @@ public class MusicPlayer {
         this.lastFrame=0;
         this.musicClip=clip;
     }
+	
+	//Function responsible for playing and resuming music
+		public void playMusic() {
+	        if (this.lastFrame<this.musicClip.getFrameLength()) {
+	        	this.musicClip.setFramePosition(lastFrame);
+	        } else{
+	        	this.musicClip.setFramePosition(0);
+	        }
+		    this.musicClip.start();  
+	        System.out.println("Play:"+this.songName); //for debug, prints currently playing clip
+		}
+
+		//Function responsible foe pausing music
+		public void pauseMusic() {
+			//Check if clip exist 
+			if(this.musicClip==null) {
+				System.out.println("Clip doesn't exist");
+				return;
+			}
+			//Case for currClip
+			if (this.musicClip.isRunning()) {
+				//Storing current frame position in lastFrame
+	            lastFrame=this.musicClip.getFramePosition();
+	            this.musicClip.stop();
+	        }else {
+	        	//When music isn't playing, prints that message 
+	        	System.out.println("Music isn't playing");
+	        }
+			
+			System.out.println("Pause:"+this.songName); //for debug, print currently pausing clip
+		}
+		
+		public boolean isRunning() {
+			return this.musicClip.isRunning();
+		}
+	
+	
+
 	
 	
 
