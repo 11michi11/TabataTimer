@@ -1,3 +1,4 @@
+package mainFrame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
@@ -31,15 +32,15 @@ public class Main extends JFrame {
 	//Main panel for components used for Tabata functionality, like countdown and rounds
 	private TabataPanel tabataPanel;
 	//Variables used for playing music. They are used for storing last played frame of songs or timer sound.
-	private int lastFrame;
-	private int lastFrameT;
-	private int lastFrameE;
+	private static int lastFrame;
+	private static int lastFrameT;
+	private static int lastFrameE;
 	//Clips for playing music
-    private Clip currentClip;	//currently playing song
-    private Clip timerClip; //Tabata timer sounds 
-    private Clip endingClip; //clip for ending music (Bill Contii - Gonna Fly Now)
+    private static Clip currentClip;	//currently playing song
+    private static Clip timerClip; //Tabata timer sounds 
+    private static Clip endingClip; //clip for ending music (Bill Contii - Gonna Fly Now)
     private String audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
-    private FloatControl gainControl; // Variable responsible for volume control of currClip
+    private static FloatControl gainControl; // Variable responsible for volume control of currClip
     private JMenuBar menuBar;	//Menu bar for main frame
     private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
@@ -57,7 +58,7 @@ public class Main extends JFrame {
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
 		Scanner in=new Scanner(namesStream);
 		
-		
+		System.out.println("I'm here");
 		//Loading songs names to ArrayList<String> soundsPaths
 		while(in.hasNext()) {
 			soundsNames.add(in.next());
@@ -227,7 +228,7 @@ public class Main extends JFrame {
 	}
 	
 	//Function responsible for loading songs from File audioClip and creating and preparing Clip object
-	public Clip loadClip(String audioFile, boolean current) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	public static Clip loadClip(String audioFile, boolean current) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
 		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
 		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));
@@ -242,7 +243,7 @@ public class Main extends JFrame {
     }
 		
 	//Function responsible for playing and resuming music
-	public void playMusic(Clip clip) {
+	public static void playMusic(Clip clip) {
 		//Case for currClip
 		if(clip==currentClip) {
 			//When lastFrame is greater than clip length in frames that means that clip was played through to the end and needs to by reseted
@@ -271,7 +272,7 @@ public class Main extends JFrame {
 	}
 
 	//Function responsible foe pausing music
-	public void pauseMusic(Clip clip) {
+	public static void pauseMusic(Clip clip) {
 		//Check if clip exist 
 		if(clip==null) {
 			System.out.println("Clip doesn't exist");
