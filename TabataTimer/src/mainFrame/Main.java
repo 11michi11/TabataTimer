@@ -28,15 +28,12 @@ import java.util.prefs.Preferences;
 
 public class Main extends JFrame {
 	private TabataPanel tabataPanel;
-	private static int lastFrame;
-	private static int lastFrameT;
-	private static int lastFrameE;
+	
 	//Clips for playing music
-    private static Clip currentClip;	//currently playing song
-    private static Clip timerClip; //Tabata timer sounds 
-    private static Clip endingClip; //clip for ending music (Bill Contii - Gonna Fly Now)
+    private static MusicPlayer currentSong;	
+    private static MusicPlayer timerSong; 
+    private static MusicPlayer endingSong; 
     private String audioFile;	//Temporary file used for loading songs as a file from resources. It is used by loadClip() for creating Clips 
-    private static FloatControl gainControl; // Variable responsible for volume control of currClip
     private JMenuBar menuBar;	//Menu bar for main frame
     private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
@@ -53,9 +50,6 @@ public class Main extends JFrame {
 		//names.txt contains names of songs, which are used as background music during training. Names are separated by space
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
 		Scanner in=new Scanner(namesStream);
-		
-		System.out.println("I'm here");
-		//Loading songs names to ArrayList<String> soundsPaths
 		while(in.hasNext()) {
 			soundsNames.add(in.next());
 		}
@@ -63,15 +57,10 @@ public class Main extends JFrame {
 		//for debug, prints the content of ArrayList<String> soundsPaths to check if names loaded properly
 		for(String e:soundsNames)
 			System.out.println(e);
-		
-		
+	
 		try {
-			//Loading song to a File audioFile from resources
-			endingClip=loadClip("resources/Bill_Conti_-_Gonna_Fly_Now.wav", false);
-			audioFile="resources/single_round_no_music.wav";
-			//Creating Clip timerClip and preparing it to be playable in loadClip() function
-			timerClip=loadClip(audioFile, false);
-			//System.out.println(timerClip);	//for debug, to check if Clip timerClip was created properly
+			endingSong=new MusicPlayer("Bill_Conti_-_Gonna_Fly_Now.wav");
+			timerSong=new MusicPlayer("single_round_no_music.wav");
 		} catch (LineUnavailableException e2) {
 			e2.printStackTrace();
 		} catch (IOException e2) {
@@ -79,16 +68,12 @@ public class Main extends JFrame {
 		} catch (UnsupportedAudioFileException e2) {
 			e2.printStackTrace();
 		}
-		
-		//Creating Toolkit kit to get screen size
+
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
 		int screenHeight=screenSize.height;
 		int screenWidth=screenSize.width;
-		//System.out.println(screenHeight+"x"+screenWidth);
-		//Setting size of the frame to square with a side of a half screen width
 		setSize(screenWidth/2, screenWidth/2);
-		//Setting frame relative location to null
 		setLocationRelativeTo(null);
 		
 		//Creating TabataPanel tabataPanel. This is main panel of frame. 
@@ -200,8 +185,6 @@ public class Main extends JFrame {
 				
 			}
 		});
-		
-		
 	}
 	
 	public static void main(String[] args) {
@@ -221,89 +204,6 @@ public class Main extends JFrame {
 				
 			}
 		});
-	}
-	
-	//Function responsible for loading songs from File audioClip and creating and preparing Clip object
-	public static Clip loadClip(String audioFile, boolean current) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-		Clip clip;
-		InputStream iStream=Main.class.getClassLoader().getResourceAsStream(audioFile);
-		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));
-        AudioFormat format=audioStream.getFormat();
-        DataLine.Info info=new DataLine.Info(Clip.class, format);
-        clip=(Clip)AudioSystem.getLine(info);
-        clip.open(audioStream);
-        if(current)
-        	gainControl=(FloatControl)clip.getControl(FloatControl.Type.MASTER_GAIN);
-        lastFrame=0;
-        return clip;
-    }
-		
-	//Function responsible for playing and resuming music
-	public static void playMusic(Clip clip) {
-		//Case for currClip
-		if(clip==currentClip) {
-			//When lastFrame is greater than clip length in frames that means that clip was played through to the end and needs to by reseted
-	        if (lastFrame<clip.getFrameLength()) {
-	            clip.setFramePosition(lastFrame);
-	        } else{
-	            clip.setFramePosition(0);
-	        }
-		}else if(clip==timerClip){  //case for timerClip
-			if (lastFrameT<clip.getFrameLength()) {
-	            clip.setFramePosition(lastFrameT);
-	        } else{
-	            clip.setFramePosition(0);
-	        }
-		}else if(clip==endingClip){  //case for endingClip
-			if (lastFrameE<clip.getFrameLength()) {
-	            clip.setFramePosition(lastFrameE);
-	        } else{
-	            clip.setFramePosition(0);
-	        }
-		}
-		
-		//Staring playing clip
-        clip.start();  
-        System.out.println("Play:"+(clip==currentClip?"curr":"timer")); //for debug, prints currently playing clip
-	}
-
-	//Function responsible foe pausing music
-	public static void pauseMusic(Clip clip) {
-		//Check if clip exist 
-		if(clip==null) {
-			System.out.println("Clip doesn't exist");
-			return;
-		}
-		//Case for currClip
-		if(clip==currentClip) {
-			if (clip.isRunning()) {
-				//Storing current frame position in lastFrame
-	            lastFrame=clip.getFramePosition();
-	            clip.stop();
-	        }else {
-	        	//When music isn't playing, prints that message 
-	        	System.out.println("Music isn't playing");
-	        }
-		}else if(clip==timerClip){ //case for timerClip
-			if (clip.isRunning()) {
-				//Storing current frame position in lastFrame
-	            lastFrameT=clip.getFramePosition();
-	            clip.stop();
-	        }else {
-	        	//When music isn't playing, prints that message 
-	        	System.out.println("Music isn't playing");
-	        }
-		}else if(clip==endingClip){ //case for endingClip
-			if (clip.isRunning()) {
-				//Storing current frame position in lastFrame
-	            lastFrameE=clip.getFramePosition();
-	            clip.stop();
-	        }else {
-	        	//When music isn't playing, prints that message 
-	        	System.out.println("Music isn't playing");
-	        }
-		}
-		System.out.println("Pause:"+(clip==currentClip?"curr":clip==timerClip?"timer":"ending")); //for debug, print currently pausing clip
 	}
 	
 	//Class for font size setup dialog
@@ -601,13 +501,13 @@ public class Main extends JFrame {
 								case RESET:
 									((Rounds) tabataPanel.getComponent(2)).setRound(0);
 									((Rounds)tabataPanel.getComponent(2)).setTab(0);
-									lastFrameT=timerClip.getFrameLength();
+									timerSong.skipSongToEnd();;
 									seconds=0;
 									break;
 								case BEFORE:
 									((Rounds) tabataPanel.getComponent(2)).setRound(0);
 									((Rounds)tabataPanel.getComponent(2)).setTab(0);
-									lastFrameT=timerClip.getFrameLength();
+									timerSong.skipSongToEnd();
 									System.out.println(actionToDo.toString());
 									if(!runed) {
 										seconds=10;
@@ -618,14 +518,14 @@ public class Main extends JFrame {
 									tabataPanel.setColors(Color.WHITE, Color.BLUE);
 									tabataPanel.repaint();
 									
-									playMusic(timerClip);
+									timerSong.play();
 									playTimerClip=true;
 									changeMusic=true;
 									runed=false;
 						
 									break;
 								case EXERCISE:
-									gainControl.setValue(5.0f);
+									currentSong.setGainValue(5.0f);
 									((Rounds) tabataPanel.getComponent(2)).addRound(1);
 									tabataPanel.setColors(Color.WHITE, Color.GREEN);
 									seconds=20;
@@ -635,22 +535,22 @@ public class Main extends JFrame {
 									
 									break;
 								case REST:
-									if(!currentClip.isRunning()) 
-										playMusic(currentClip);
+									if(!currentSong.isRunning()) 
+										currentSong.play();
 									tabataPanel.setColors(Color.WHITE, Color.RED);
 									seconds=10;
 									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
 									tabataPanel.repaint();
 									
 									changeMusic=true;
-									gainControl.setValue(-15.0f);
-									pauseMusic(timerClip);
-									lastFrameT=timerClip.getFrameLength();
-									playMusic(timerClip);
+									currentSong.setGainValue(-15.0f);
+									timerSong.pause();
+									timerSong.skipSongToEnd();
+									timerSong.play();
 									
 									break;
 								case RESTROUND:
-									pauseMusic(timerClip);
+									timerSong.pause();
 									
 									seconds=30;
 									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
@@ -661,7 +561,7 @@ public class Main extends JFrame {
 									playTimerClip=false;
 									
 									changeMusic=true;
-									gainControl.setValue(-15.0f);
+									currentSong.setGainValue(-15.0f);
 											
 									break;
 								case ENDROUND:
@@ -712,7 +612,7 @@ public class Main extends JFrame {
 								case RESET:
 									((Rounds) tabataPanel.getComponent(2)).setRound(0);
 									((Rounds)tabataPanel.getComponent(2)).setTab(0);
-									lastFrameT=timerClip.getFrameLength();
+									timerSong.skipSongToEnd();
 									seconds=0;
 									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 									break;
@@ -722,18 +622,18 @@ public class Main extends JFrame {
 							}
 							tabataPanel.repaint();
 							
-							if(timerClip!=null&&!timerClip.isRunning()&&playTimerClip)
-								playMusic(timerClip);
-							if(currentClip!=null&&!currentClip.isRunning()&&playCurrentClip)
-								playMusic(currentClip);
-							if(endingClip!=null&&!endingClip.isRunning()&&playEndingClip)
-								playMusic(endingClip);
+							if(timerSong!=null&&!timerSong.isRunning()&&playTimerClip)
+								timerSong.play();
+							if(currentSong!=null&&!currentSong.isRunning()&&playCurrentClip)
+								currentSong.play();
+							if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
+								endingSong.play();
 														
 							paused=false;
 						}
 						
 						while(actionToDo==ActionEnum.ENDROUND) {
-							if(!endingClip.isRunning())
+							if(!endingSong.isRunning())
 								Thread.currentThread().interrupt();
 						}
 												
@@ -746,22 +646,22 @@ public class Main extends JFrame {
 							tabataPanel.getComponent(2).repaint();
 							
 							if((changeMusic&&seconds==5)||(actionToDo==ActionEnum.RESTROUND&&seconds==25)||(actionToDo==ActionEnum.RESTROUND&&seconds==5)) {
-								if(currentClip!=null&&currentClip.isRunning())
-									pauseMusic(currentClip);
+								if(currentSong!=null&&currentSong.isRunning())
+									currentSong.pause();
 								do {
 									rand=rn.nextInt(soundsNames.size());
 								}while(musicIndx==rand);
 								musicIndx=rand;
 								System.out.println(soundsNames.get(musicIndx));
-								audioFile="resources/"+soundsNames.get(musicIndx);
-								currentClip=loadClip(audioFile, true);
-								gainControl.setValue(-15.0f);
-								playMusic(currentClip);
+								
+								currentSong=new MusicPlayer(soundsNames.get(musicIndx));
+								currentSong.setGainValue(-15.0f);
+								currentSong.play();
 								changeMusic=false;
 							}
 	
 							if(actionToDo==ActionEnum.RESTROUND&&seconds==10)
-								playMusic(timerClip);
+								timerSong.play();
 	
 						}
 						
@@ -772,8 +672,8 @@ public class Main extends JFrame {
 								if(((Rounds)tabataPanel.getComponent(2)).getRound()==((Rounds)tabataPanel.getComponent(2)).getTotalRounds()) {
 									//check if training is done and if yes, go to reset
 									if(((Rounds)tabataPanel.getComponent(2)).getTab()+1==((Rounds)tabataPanel.getComponent(2)).getTabTotal()) {
-										pauseMusic(currentClip);
-										pauseMusic(timerClip);
+										currentSong.pause();
+										timerSong.pause();
 										tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 										tabataPanel.repaint();
 										actionToDo=ActionEnum.ENDROUND;
@@ -811,8 +711,8 @@ public class Main extends JFrame {
 					}			
 			}catch(InterruptedException e) {
 				paused=true;
-				pauseMusic(currentClip);
-				pauseMusic(timerClip);
+				currentSong.pause();
+				timerSong.pause();
 				System.out.println("Timer interrupted!");
 			} catch (LineUnavailableException e) {
 				e.printStackTrace();

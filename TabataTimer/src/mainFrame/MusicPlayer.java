@@ -37,7 +37,7 @@ public class MusicPlayer {
         this.musicClip=clip;
     }
 	
-	public void playMusic() {
+	public void play() {
         if (this.lastFrame<this.musicClip.getFrameLength()) {
         	this.musicClip.setFramePosition(lastFrame);
         } else{
@@ -47,7 +47,7 @@ public class MusicPlayer {
         System.out.println("Play:"+this.songName);
 	}
 
-	public void pauseMusic() { 
+	public void pause() { 
 		if(this.musicClip==null) {
 			System.out.println("Clip doesn't exist");
 			return;
@@ -72,6 +72,14 @@ public class MusicPlayer {
 	
 	public int getLastFrame() {
 		return this.lastFrame;
+	}
+	
+	public void skipSongToEnd() {
+		this.lastFrame=this.musicClip.getFrameLength();
+	}
+	
+	public void setGainValue(float value) {
+		this.gainControl.setValue(value);
 	}
 	
 	

@@ -18,9 +18,9 @@ public class MainTest {
 	public void testPlayMusic() {
 		try{
 			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-			music.playMusic();
+			music.play();
 			assertFalse(music.isRunning());
-			music.pauseMusic();
+			music.pause();
 		}catch (Exception e) {
 			fail();
 		}
@@ -48,8 +48,8 @@ public class MainTest {
 	public void testPauseMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		try{
 			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-			music.playMusic();
-			music.pauseMusic();
+			music.play();
+			music.pause();
 			assertTrue(music.isRunning());
 			assertEquals(music.getFramePosition(), music.getLastFrame());
 		}catch (Exception e) {
