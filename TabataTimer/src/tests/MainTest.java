@@ -15,18 +15,26 @@ import mainFrame.MusicPlayer;
 public class MainTest {
 	
 	@Test
-	public void testPlayMusic() throws Exception {
-		MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-		music.playMusic();
-		assertFalse(music.isRunning());
-		music.pauseMusic();
+	public void testPlayMusic() {
+		try{
+			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
+			music.playMusic();
+			assertFalse(music.isRunning());
+			music.pauseMusic();
+		}catch (Exception e) {
+			fail();
+		}
 	}
 
 	@Test
-	public void testGetMusicFileFromString() throws Exception {
-		MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-		music.loadClip();
-		assertNotNull(music);
+	public void testGetMusicFileFromString() {
+		try{
+			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
+			music.loadClip();
+			assertNotNull(music);
+		}catch (Exception e) {
+			fail();
+		}
 	}
 	
 	@Test
@@ -34,5 +42,19 @@ public class MainTest {
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
 		Scanner namesFileScanner=new Scanner(namesStream);
 		assertNotNull(namesFileScanner);
+	}
+	
+	@Test
+	public void testPauseMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+		try{
+			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
+			music.playMusic();
+			music.pauseMusic();
+			assertTrue(music.isRunning());
+			assertEquals(music.getFramePosition(), music.getLastFrame());
+		}catch (Exception e) {
+			fail();
+		}
+		
 	}
 }

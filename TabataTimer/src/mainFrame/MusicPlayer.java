@@ -37,40 +37,42 @@ public class MusicPlayer {
         this.musicClip=clip;
     }
 	
-	//Function responsible for playing and resuming music
-		public void playMusic() {
-	        if (this.lastFrame<this.musicClip.getFrameLength()) {
-	        	this.musicClip.setFramePosition(lastFrame);
-	        } else{
-	        	this.musicClip.setFramePosition(0);
-	        }
-		    this.musicClip.start();  
-	        System.out.println("Play:"+this.songName); //for debug, prints currently playing clip
-		}
+	public void playMusic() {
+        if (this.lastFrame<this.musicClip.getFrameLength()) {
+        	this.musicClip.setFramePosition(lastFrame);
+        } else{
+        	this.musicClip.setFramePosition(0);
+        }
+	    this.musicClip.start();  
+        System.out.println("Play:"+this.songName);
+	}
 
-		//Function responsible foe pausing music
-		public void pauseMusic() {
-			//Check if clip exist 
-			if(this.musicClip==null) {
-				System.out.println("Clip doesn't exist");
-				return;
-			}
-			//Case for currClip
-			if (this.musicClip.isRunning()) {
-				//Storing current frame position in lastFrame
-	            lastFrame=this.musicClip.getFramePosition();
-	            this.musicClip.stop();
-	        }else {
-	        	//When music isn't playing, prints that message 
-	        	System.out.println("Music isn't playing");
-	        }
-			
-			System.out.println("Pause:"+this.songName); //for debug, print currently pausing clip
+	public void pauseMusic() { 
+		if(this.musicClip==null) {
+			System.out.println("Clip doesn't exist");
+			return;
 		}
+		if (this.musicClip.isRunning()) {
+            lastFrame=this.musicClip.getFramePosition();
+            this.musicClip.stop();
+        }else { 
+        	System.out.println("Music isn't playing");
+        }
 		
-		public boolean isRunning() {
-			return this.musicClip.isRunning();
-		}
+		System.out.println("Pause:"+this.songName);
+	}
+	
+	public boolean isRunning() {
+		return this.musicClip.isRunning();
+	}
+	
+	public int getFramePosition() {
+		return this.musicClip.getFramePosition();
+	}
+	
+	public int getLastFrame() {
+		return this.lastFrame;
+	}
 	
 	
 

@@ -26,12 +26,8 @@ import java.util.prefs.Preferences;
  * @version Alpha 2.1 
  */
 
-
-// Bill_Conti_-_Gonna_Fly_Now.wav
 public class Main extends JFrame {
-	//Main panel for components used for Tabata functionality, like countdown and rounds
 	private TabataPanel tabataPanel;
-	//Variables used for playing music. They are used for storing last played frame of songs or timer sound.
 	private static int lastFrame;
 	private static int lastFrameT;
 	private static int lastFrameE;
