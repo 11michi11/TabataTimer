@@ -64,38 +64,30 @@ public class Main extends JFrame {
 		//It is responsible for displaying background.
 		//It is also main panel for components witch are responsible for displaying countdown and rounds	
 		tabataPanel=new TabataPanel();
-		//Creating new Action startAction.
-		//It is responsible for starting training by running countdown and music in new Thread Timer.
+
 		//Can be started by button or pressing space key.
 		Action startAction=new StartAction("Start");
 		tabataPanel.add(new JButton(startAction));
-		
-		//Creating new component Countdown count. It is responsible for displaying counting down. 
+		 
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
 		tabataPanel.add(count);
 		
-		//Creating new component Runds. It is responsible for displaying number of rounds and tabats.
 		Rounds runds=new Rounds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		runds.setOpaque(false);
 		tabataPanel.add(runds);
 		
-		//Adding tabataPanel to frame
 		add(tabataPanel);
 		
-		//Creating InputMap and ActionMap to enable staring by pressing space key
 		InputMap imap=tabataPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
 		ActionMap amap=tabataPanel.getActionMap();
 		amap.put("panel.start", startAction);
 		
-		//Creating JMenuBar menuBar for frame, and adding menu elements
 		menuBar=new JMenuBar();
 		setJMenuBar(menuBar);
-		//Settings element, for setting up training
 		JMenu settingsMenu=new JMenu("Settings");
 		menuBar.add(settingsMenu);
-		//Adding setup for Tabata, it creates and shows dialog box to adjust amount of rounds or tabatas
 		JMenuItem tabSetup=settingsMenu.add("Setup Tabata");
 		tabSetup.addActionListener(new ActionListener() {
 			
@@ -107,7 +99,6 @@ public class Main extends JFrame {
 			}
 		});
 		
-		//Adding setup for fonts size for countdown and rounds display
 		JMenuItem fontSizeSetup=settingsMenu.add("Change font size");
 		fontSizeSetup.addActionListener(new ActionListener() {
 			
@@ -120,16 +111,13 @@ public class Main extends JFrame {
 			}
 		});
 		
-		//Adding stats menu, but it will be developed in the future
 		
 		JMenu statsMenu=new JMenu("Stats");
 		menuBar.add(statsMenu);
 		JMenuItem comingSoon=statsMenu.add("Coming Soon");
 		
-		//Adding help menu and its elements, 'About' and 'Examples'
 		JMenu helpMenu=new JMenu("Help");
 		menuBar.add(helpMenu);
-		//Element 'About' shows dialog box that informs user about functionality of the program and explains basic usage
 		JMenuItem aboutItem=helpMenu.add("About");
 		aboutItem.addActionListener(new ActionListener() {
 			
@@ -190,7 +178,6 @@ public class Main extends JFrame {
 		});
 	}
 	
-	//Class for font size setup dialog
 	public class FontSizeSetupDialog extends JDialog{
 		
 		public FontSizeSetupDialog(JFrame owner){
@@ -258,7 +245,6 @@ public class Main extends JFrame {
 		}
 	}
 		
-	//Class responsible for dialog box used to set up Tabata
 	public class TabSetupDialog extends JDialog{
 		
 		public TabSetupDialog(JFrame owner) {
