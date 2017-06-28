@@ -24,7 +24,7 @@ public class MusicPlayer {
 	private FloatControl gainControl;
 	private int musicIndx;
 	private Clip musicClip;
-	private final ArrayList<String> songsNames=loadSongsNames();
+	public final ArrayList<String> songsNames=loadSongsNames();
 	
 	public MusicPlayer() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Random rn=new Random();
@@ -42,6 +42,7 @@ public class MusicPlayer {
 	private int getSongsNamesArraySize() {
 		return songsNames.size();
 	}
+	
 	
 	public String getNextSongName() {
 		int rand;
@@ -64,7 +65,7 @@ public class MusicPlayer {
 		return names;
 	}
 	
-	public void loadClip() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+	private void loadClip() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		Clip clip;
 		InputStream iStream=Main.class.getClassLoader().getResourceAsStream("resources/"+songName);
 		AudioInputStream audioStream=AudioSystem.getAudioInputStream(new BufferedInputStream(iStream));

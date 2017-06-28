@@ -9,33 +9,38 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.junit.Before;
 import org.junit.Test;
 import mainFrame.Main;
 import mainFrame.MusicPlayer;
 
 public class MainTest {
+	private MusicPlayer musicPlayer;
 	
-	@Test
-	public void testPlayMusic() {
-		try{
-			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-			music.play();
-			assertFalse(music.isRunning());
-			music.pause();
-		}catch (Exception e) {
+	
+	@Before
+	public void initObjects() {
+		try {
+			musicPlayer=new MusicPlayer("single_round_no_music.wav");
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			fail();
 		}
 	}
-
+	
 	@Test
-	public void testGetMusicFileFromString() {
-		try{
-			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-			music.loadClip();
-			assertNotNull(music);
-		}catch (Exception e) {
-			fail();
-		}
+	public void testPlayMusic() {
+		musicPlayer.play();
+		assertFalse(musicPlayer.isRunning());
+		musicPlayer.pause();
+	
+	}
+	
+	@Test
+	public void testPauseMusic() {
+		musicPlayer.play();
+		musicPlayer.pause();
+		assertTrue(musicPlayer.isRunning());
+		assertEquals(musicPlayer.getFramePosition(), musicPlayer.getLastFrame());
 	}
 	
 	@Test
@@ -46,16 +51,8 @@ public class MainTest {
 	}
 	
 	@Test
-	public void testPauseMusic() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-		try{
-			MusicPlayer music=new MusicPlayer("single_round_no_music.wav");
-			music.play();
-			music.pause();
-			assertTrue(music.isRunning());
-			assertEquals(music.getFramePosition(), music.getLastFrame());
-		}catch (Exception e) {
-			fail();
-		}
-		
+	public void testGetNextSongName() {
+		String songName=musicPlayer.getNextSongName();
+		assertTrue(musicPlayer.songsNames.contains(songName));
 	}
 }
