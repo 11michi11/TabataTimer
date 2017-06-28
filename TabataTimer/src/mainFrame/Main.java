@@ -542,11 +542,7 @@ public class Main extends JFrame {
 							case ENDROUND:
 								((Rounds) tabataPanel.getComponent(2)).addTab(1);
 								tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-								tabataPanel.repaint();
-								//actionToDo=ActionEnum.RESET;
-								//Thread.currentThread().interrupt();
-								//WORK IN PROGRESS - will be added later
-								//play end music - Bill Conti - Gonna Fly Now, 
+								tabataPanel.repaint(); 
 								playEndingClip=true;
 								break;
 							default:
@@ -606,10 +602,14 @@ public class Main extends JFrame {
 													
 						paused=false;
 					}
+					if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
+						endingSong.play();
 					
 					while(actionToDo==ActionEnum.ENDROUND) {
-						if(!endingSong.isRunning())
+						if(!endingSong.isRunning()) {
+							actionToDo=ActionEnum.RESET;
 							Thread.currentThread().interrupt();
+						}
 					}
 											
 					System.out.println(actionToDo+"in while");

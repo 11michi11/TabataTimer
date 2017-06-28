@@ -14,7 +14,7 @@ import org.junit.Test;
 import mainFrame.Main;
 import mainFrame.MusicPlayer;
 
-public class MainTest {
+public class MusicPlayerTest {
 	private MusicPlayer musicPlayer;
 	
 	
