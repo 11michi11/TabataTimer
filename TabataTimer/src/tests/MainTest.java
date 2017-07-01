@@ -1,6 +1,9 @@
 package tests;
 
 import static org.junit.Assert.*;
+
+import java.util.prefs.Preferences;
+
 import org.junit.Test;
 import mainFrame.Countdown;
 import mainFrame.Main;
@@ -20,6 +23,13 @@ public class MainTest {
 		Rounds roundsComp=Main.getRoundsComponent();
 		assertNotNull(roundsComp);
 		assertTrue(Main.tabataPanel.isAncestorOf(roundsComp));
+	}
+	
+	@Test
+	public void testGetPreferenceNode() {
+		Main frame=new Main();
+		Preferences node=frame.getPreferencesNode();
+		assertNotNull(node);
 	}
 	
 	
