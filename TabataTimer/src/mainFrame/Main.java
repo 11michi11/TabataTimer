@@ -42,23 +42,8 @@ public class Main extends JFrame {
 	public final Preferences node=root.node("/TabataTimer");
 	
 	public Main() {
-		
-		try {
-			endingSong=new MusicPlayer("Bill_Conti_-_Gonna_Fly_Now.wav");
-			timerSong=new MusicPlayer("single_round_no_music.wav");
-		} catch (LineUnavailableException e2) {
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		} catch (UnsupportedAudioFileException e2) {
-			e2.printStackTrace();
-		}
-
-		Toolkit kit=Toolkit.getDefaultToolkit();
-		Dimension screenSize=kit.getScreenSize();
-		int screenHeight=screenSize.height;
-		int screenWidth=screenSize.width;
-		setSize(screenWidth/2, screenWidth/2);
+		prepareMusic();
+		setFrameSize();
 		setLocationRelativeTo(null);
 		
 		//Creating TabataPanel tabataPanel. This is main panel of frame. 
@@ -66,8 +51,38 @@ public class Main extends JFrame {
 		//It is also main panel for components witch are responsible for displaying countdown and rounds	
 		tabataPanel=new TabataPanel();
 
-		//Can be started by button or pressing space key.
 		Action startAction=new StartAction("Start");
+		setTabataPanelComponents(startAction);
+		add(tabataPanel);
+
+		setInputMap(startAction);
+		
+		menuBar=new JMenuBar();
+		setJMenuBar(menuBar);
+		addMenuBarItems(menuBar);
+	}
+	
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				frame.setTitle("TabataTimer - Alfa 2.0");
+				frame.setVisible(true);
+				
+				JOptionPane.showMessageDialog(frame,
+						"Welcom to Tabata Timer, your best training partner.\n"
+						+ "To start or pause Tabata press SPACE.\n"
+						+ "To setup your training, go to SETTINGS.\n"
+						+ "If you get lost, go to HELP\n"
+						+ "It is recommended use in fullscreen mode\n",
+						"Start Messege", JOptionPane.PLAIN_MESSAGE);
+				
+			}
+		});
+	}
+	
+	private void setTabataPanelComponents(Action startAction) {
+		//Can be started by button or pressing space key.
 		startButton=new JButton(startAction);
 		tabataPanel.add(startButton);
 		 
@@ -78,17 +93,43 @@ public class Main extends JFrame {
 		Rounds rounds=new Rounds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		rounds.setOpaque(false);
 		tabataPanel.add(rounds);
-		
-		add(tabataPanel);
-		
-		
+	}
+
+	private void setInputMap(Action startAction) {
 		InputMap imap=tabataPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
 		ActionMap amap=tabataPanel.getActionMap();
 		amap.put("panel.start", startAction);
-		
-		menuBar=new JMenuBar();
-		setJMenuBar(menuBar);
+	}
+	
+	private void prepareMusic() {
+		try {
+			endingSong=new MusicPlayer("Bill_Conti_-_Gonna_Fly_Now.wav");
+			timerSong=new MusicPlayer("single_round_no_music.wav");
+		} catch (LineUnavailableException e2) {
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		} catch (UnsupportedAudioFileException e2) {
+			e2.printStackTrace();
+		}
+	}
+
+	private void setFrameSize() {
+		Toolkit kit=Toolkit.getDefaultToolkit();
+		Dimension screenSize=kit.getScreenSize();
+		int screenHeight=screenSize.height;
+		int screenWidth=screenSize.width;
+		setSize(screenWidth/2, screenWidth/2);
+	}
+	
+	private void addMenuBarItems(JMenuBar menuBar) {
+		addSettingsMenu(menuBar);
+		addStatsMenu(menuBar);
+		addHelpMenu(menuBar);
+	}
+	
+	private void addSettingsMenu(JMenuBar menuBar) {
 		JMenu settingsMenu=new JMenu("Settings");
 		menuBar.add(settingsMenu);
 		JMenuItem tabSetup=settingsMenu.add("Setup Tabata");
@@ -113,12 +154,15 @@ public class Main extends JFrame {
 				
 			}
 		});
-		
-		
+	}
+
+	private void addStatsMenu(JMenuBar menuBar) {
 		JMenu statsMenu=new JMenu("Stats");
 		menuBar.add(statsMenu);
 		JMenuItem comingSoon=statsMenu.add("Coming Soon");
-		
+	}
+
+	private void addHelpMenu(JMenuBar menuBar) {
 		JMenu helpMenu=new JMenu("Help");
 		menuBar.add(helpMenu);
 		JMenuItem aboutItem=helpMenu.add("About");
@@ -161,26 +205,7 @@ public class Main extends JFrame {
 			}
 		});
 	}
-	
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setTitle("TabataTimer - Alfa 2.0");
-				frame.setVisible(true);
-				
-				JOptionPane.showMessageDialog(frame,
-						"Welcom to Tabata Timer, your best training partner.\n"
-						+ "To start or pause Tabata press SPACE.\n"
-						+ "To setup your training, go to SETTINGS.\n"
-						+ "If you get lost, go to HELP\n"
-						+ "It is recommended use in fullscreen mode\n",
-						"Start Messege", JOptionPane.PLAIN_MESSAGE);
-				
-			}
-		});
-	}
-	
+
 	public static Countdown getCountdownComponent() {
 		Component[] components=tabataPanel.getComponents();
 		Countdown countComp=new Countdown(20);
@@ -205,10 +230,6 @@ public class Main extends JFrame {
 		return node;
 	}
 	
-	public JButton getStartButton() {
-		return this.startButton;
-	}
-	
 	
 	//Class responsible for Action. It's starting and interrupting Thread Timer when specific action is performed.
 	//Those action are clicking the "Start" button and pressing 'SPACE' key
@@ -228,11 +249,11 @@ public class Main extends JFrame {
 				t=new Thread(r);
 				t.start();
 				//Changing start button description
-				((JButton)tabataPanel.getComponent(0)).setText("Pause");
+				startButton.setText("Pause");
 				flag=false;
 			}else {
 				//Changing start button description
-				((JButton)tabataPanel.getComponent(0)).setText("Start");
+				startButton.setText("Start");
 				//Changing background color of tabataPanel
 				tabataPanel.setColors(Color.WHITE, Color.BLUE);
 				tabataPanel.repaint();

@@ -30,13 +30,5 @@ public class MainTest {
 		Preferences node=frame.getPreferencesNode();
 		assertNotNull(node);
 	}
-	
-	@Test
-	public void testGetStartButton() {
-		Main frame=new Main();
-		JButton startBtn=frame.getStartButton();
-		assertNotNull(startBtn);
-		assertTrue(Main.tabataPanel.isAncestorOf(startBtn));
-	}
 
 }
