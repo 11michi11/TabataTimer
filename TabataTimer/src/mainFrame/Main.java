@@ -27,7 +27,7 @@ import java.util.prefs.Preferences;
  */
 
 public class Main extends JFrame {
-	private TabataPanel tabataPanel;
+	public static TabataPanel tabataPanel;
 	
 	//Clips for playing music
     private static MusicPlayer currentSong;	
@@ -78,6 +78,7 @@ public class Main extends JFrame {
 		tabataPanel.add(runds);
 		
 		add(tabataPanel);
+		
 		
 		InputMap imap=tabataPanel.getInputMap(JComponent.WHEN_FOCUSED);
 		imap.put(KeyStroke.getKeyStroke("space"),"panel.start");
@@ -178,6 +179,27 @@ public class Main extends JFrame {
 		});
 	}
 	
+	public static Countdown getCountdownComponent() {
+		Component[] components=tabataPanel.getComponents();
+		Countdown countComp=new Countdown(20);
+		for(Component comp:components) 
+			if(comp instanceof Countdown)
+				countComp=(Countdown)comp;
+		
+		return countComp;
+	}
+	
+	
+	public static Rounds getRoundsComponent() {
+		Component[] components=tabataPanel.getComponents();
+		Rounds roundsComp=new Rounds(8,8);
+		for(Component comp:components) 
+			if(comp instanceof Rounds) 
+				roundsComp=(Rounds)comp;
+			
+		return roundsComp;
+	}
+
 	public class FontSizeSetupDialog extends JDialog{
 		
 		public FontSizeSetupDialog(JFrame owner){
