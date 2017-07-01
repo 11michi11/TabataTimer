@@ -30,9 +30,9 @@ public class Main extends JFrame {
 	public static TabataPanel tabataPanel;
 	
 	//Clips for playing music
-    private static MusicPlayer currentSong;	
-    private static MusicPlayer timerSong; 
-    private static MusicPlayer endingSong;  
+    public static MusicPlayer currentSong;	
+    public static MusicPlayer timerSong; 
+    public static MusicPlayer endingSong;  
     private JMenuBar menuBar;	//Menu bar for main frame
     private TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
@@ -188,8 +188,7 @@ public class Main extends JFrame {
 		
 		return countComp;
 	}
-	
-	
+		
 	public static Rounds getRoundsComponent() {
 		Component[] components=tabataPanel.getComponents();
 		Rounds roundsComp=new Rounds(8,8);
@@ -199,7 +198,7 @@ public class Main extends JFrame {
 			
 		return roundsComp;
 	}
-
+	
 	public class FontSizeSetupDialog extends JDialog{
 		
 		public FontSizeSetupDialog(JFrame owner){
@@ -214,8 +213,10 @@ public class Main extends JFrame {
 			roundsFontSizeLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
 			
 			//Creating texts fields for adjusting fonts size
-			JTextField countdownTextField=new JTextField(Integer.toString(((Countdown) tabataPanel.getComponent(1)).getFontSize()), 2);
-			JTextField roundsTextField=new JTextField(Integer.toString(((Rounds) tabataPanel.getComponent(2)).getFontSize()), 2);
+			Countdown countComp=getCountdownComponent();
+			Rounds roundsComp=getRoundsComponent();
+			JTextField countdownTextField=new JTextField(Integer.toString(countComp.getFontSize()), 2);
+			JTextField roundsTextField=new JTextField(Integer.toString(roundsComp.getFontSize()), 2);
 			
 			//Button for saving changes
 			JButton save=new JButton("Save");
@@ -226,8 +227,8 @@ public class Main extends JFrame {
 					String countdownSizeString=countdownTextField.getText().trim();
 					String roundsSizeString=roundsTextField.getText().trim();
 					
-					((Countdown) tabataPanel.getComponent(1)).setFontSize(Integer.valueOf(countdownSizeString));
-					((Rounds) tabataPanel.getComponent(2)).setFontSize(Integer.valueOf(roundsSizeString));
+					countComp.setFontSize(Integer.valueOf(countdownSizeString));
+					roundsComp.setFontSize(Integer.valueOf(roundsSizeString));
 					node.putInt("countdownFontSize", Integer.valueOf(countdownSizeString));
 					node.putInt("roundsFontSize", Integer.valueOf(roundsSizeString));
 					setVisible(false);	
@@ -244,8 +245,8 @@ public class Main extends JFrame {
 					countdownTextField.setText("250");
 					roundsTextField.setText("80");
 					
-					((Countdown) tabataPanel.getComponent(1)).setFontSize(250);
-					((Rounds) tabataPanel.getComponent(2)).setFontSize(80);
+					countComp.setFontSize(250);
+					roundsComp.setFontSize(80);
 					node.putInt("countdownFontSize", 250);
 					node.putInt("roundsFontSize", 80);
 				}
@@ -467,252 +468,5 @@ public class Main extends JFrame {
 		}
 	}
 		
-	//Enum for specific actions in tabata. Used to control program flow in switch
-	public enum ActionEnum {RESET, BEFORE, EXERCISE, REST, RESTROUND, ENDROUND};
-
-	//Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
-	//That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
-	public class Timer implements Runnable{
-		private int seconds;
-		private boolean changeMusic;
-		private boolean runed=false;
-		private boolean playTimerClip;
-		private boolean playCurrentClip;
-		private boolean playEndingClip;
-		private boolean paused=false;
-		private boolean reset=false;
-		private ActionEnum actionToDo=ActionEnum.BEFORE;
-		
-		public void run() {
-			try{
-				while(!Thread.currentThread().isInterrupted()) {
-					if(!paused) {
-						switch(actionToDo) {
-							case RESET:
-								((Rounds) tabataPanel.getComponent(2)).setRound(0);
-								((Rounds)tabataPanel.getComponent(2)).setTab(0);
-								timerSong.skipSongToEnd();;
-								seconds=0;
-								break;
-							case BEFORE:
-								((Rounds) tabataPanel.getComponent(2)).setRound(0);
-								((Rounds)tabataPanel.getComponent(2)).setTab(0);
-								timerSong.skipSongToEnd();
-								if(currentSong==null) {
-									try{
-										currentSong=new MusicPlayer();
-									}catch (Exception e) {
-										e.printStackTrace();
-									}
-								}
-								System.out.println(actionToDo.toString());
-								if(!runed) {
-									seconds=10;
-									((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-									runed=true;
-								}
-								
-								tabataPanel.setColors(Color.WHITE, Color.BLUE);
-								tabataPanel.repaint();
-								
-								timerSong.play();
-								playTimerClip=true;
-								changeMusic=true;
-								runed=false;
-					
-								break;
-							case EXERCISE:
-								currentSong.setGainValue(5.0f);
-								((Rounds) tabataPanel.getComponent(2)).addRound(1);
-								tabataPanel.setColors(Color.WHITE, Color.GREEN);
-								seconds=20;
-								((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-								tabataPanel.repaint();
-								playCurrentClip=true;
-								
-								break;
-							case REST:
-								if(!currentSong.isRunning()) 
-									currentSong.play();
-								tabataPanel.setColors(Color.WHITE, Color.RED);
-								seconds=10;
-								((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-								tabataPanel.repaint();
-								
-								changeMusic=true;
-								currentSong.setGainValue(-15.0f);
-								timerSong.pause();
-								timerSong.skipSongToEnd();
-								timerSong.play();
-								
-								break;
-							case RESTROUND:
-								timerSong.pause();
-								
-								seconds=30;
-								((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-								((Rounds) tabataPanel.getComponent(2)).addTab(1); 
-								((Rounds) tabataPanel.getComponent(2)).setRound(0);
-								tabataPanel.setColors(Color.WHITE, Color.BLUE);
-								tabataPanel.repaint();
-								playTimerClip=false;
-								
-								changeMusic=true;
-								currentSong.setGainValue(-15.0f);
-										
-								break;
-							case ENDROUND:
-								((Rounds) tabataPanel.getComponent(2)).addTab(1);
-								tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-								tabataPanel.repaint(); 
-								playEndingClip=true;
-								break;
-							default:
-								System.out.println(actionToDo.toString());
-								System.out.println("Something wrong happend!!!");
-								break;	
-						}
-					}
-											
-					//When resumed after pause those actions will be performed
-					if(paused) {
-						//Restore seconds state
-						((Countdown) tabataPanel.getComponent(1)).setSec(seconds);
-						//Switch for actions
-						switch(actionToDo) {
-							case EXERCISE:
-								tabataPanel.setColors(Color.WHITE, Color.GREEN);
-								break;
-							case REST:
-								tabataPanel.setColors(Color.WHITE, Color.RED);
-								break;
-							case BEFORE:
-								if(seconds<=5)
-									playCurrentClip=true;
-								tabataPanel.setColors(Color.WHITE, Color.BLUE);
-								break;
-							case RESTROUND:
-								if(seconds<=10)
-									playTimerClip=true;
-								changeMusic=true;
-								tabataPanel.setColors(Color.WHITE, Color.BLUE);
-								break;
-							case ENDROUND:
-								((Rounds) tabataPanel.getComponent(2)).addTab(1);
-								tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-								playEndingClip=true;
-								break;
-							case RESET:
-								((Rounds) tabataPanel.getComponent(2)).setRound(0);
-								((Rounds)tabataPanel.getComponent(2)).setTab(0);
-								timerSong.skipSongToEnd();
-								seconds=0;
-								tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-								break;
-							default:
-								System.out.println("Something wrong after paused!!!");
-								break;
-						}
-						tabataPanel.repaint();
-						
-						if(timerSong!=null&&!timerSong.isRunning()&&playTimerClip)
-							timerSong.play();
-						if(currentSong!=null&&!currentSong.isRunning()&&playCurrentClip)
-							currentSong.play();
-						if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
-							endingSong.play();
-													
-						paused=false;
-					}
-					if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
-						endingSong.play();
-					
-					while(actionToDo==ActionEnum.ENDROUND) {
-						if(!endingSong.isRunning()) {
-							actionToDo=ActionEnum.RESET;
-							Thread.currentThread().interrupt();
-						}
-					}
-											
-					System.out.println(actionToDo+"in while");
-					while(seconds>0) {
-						TimeUnit.SECONDS.sleep(1);
-						seconds--;
-						((Countdown) tabataPanel.getComponent(1)).addSec(-1);
-						tabataPanel.getComponent(1).repaint();
-						tabataPanel.getComponent(2).repaint();
-						
-						if((changeMusic&&seconds==5)||(actionToDo==ActionEnum.RESTROUND&&seconds==25)||(actionToDo==ActionEnum.RESTROUND&&seconds==5)) {
-							if(currentSong!=null&&currentSong.isRunning())
-								currentSong.pause();
-							
-							currentSong=new MusicPlayer(currentSong.getNextSongName());
-							currentSong.setGainValue(-15.0f);
-							currentSong.play();
-							changeMusic=false;
-						}
-
-						if(actionToDo==ActionEnum.RESTROUND&&seconds==10)
-							timerSong.play();
-
-					}
-					
-					//choose next action
-					switch(actionToDo) {
-						case EXERCISE:
-							//check if current tabata is done and if yes, go to rest round
-							if(((Rounds)tabataPanel.getComponent(2)).getRound()==((Rounds)tabataPanel.getComponent(2)).getTotalRounds()) {
-								//check if training is done and if yes, go to reset
-								if(((Rounds)tabataPanel.getComponent(2)).getTab()+1==((Rounds)tabataPanel.getComponent(2)).getTabTotal()) {
-									currentSong.pause();
-									timerSong.pause();
-									tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-									tabataPanel.repaint();
-									actionToDo=ActionEnum.ENDROUND;
-									break;
-								}
-								
-								tabataPanel.setColors(Color.WHITE, Color.BLUE);
-								tabataPanel.repaint();
-								actionToDo=ActionEnum.RESTROUND;
-								break;
-							}
-							
-							actionToDo=ActionEnum.REST;
-							break;
-						case REST:
-							actionToDo=ActionEnum.EXERCISE;
-							break;
-						case BEFORE:
-							actionToDo=ActionEnum.EXERCISE;
-							break;
-						case RESTROUND:
-							actionToDo=ActionEnum.EXERCISE;
-							break;
-						case ENDROUND:
-							if(reset)
-								actionToDo=ActionEnum.RESET;
-							break;
-						case RESET:
-							actionToDo=ActionEnum.BEFORE;
-							break;
-						default:
-							System.out.println("Action error!!!");
-							break;
-					}						
-				}			
-			}catch(InterruptedException e) {
-				paused=true;
-				currentSong.pause();
-				timerSong.pause();
-				System.out.println("Timer interrupted!");
-			} catch (LineUnavailableException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (UnsupportedAudioFileException e) {
-				e.printStackTrace();
-			}
-		}
-	}	
+	
 }
