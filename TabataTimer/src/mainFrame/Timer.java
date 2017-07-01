@@ -36,9 +36,9 @@ public class Timer implements Runnable{
 		try{
 			while(!Thread.currentThread().isInterrupted()) {					
 				if(paused) 
-					setNextActionAfterPause();
+					prepareForActionAfterPause();
 				else
-					setNextAction();
+					prepareForAction();
 
 				handleEndroundActions();
 								
@@ -97,7 +97,7 @@ public class Timer implements Runnable{
 		}
 	}
 	
-	private void setNextAction(){
+	private void prepareForAction(){
 		switch(actionToDo) {
 			case RESET:
 				roundsComp.setRound(0);
@@ -185,7 +185,7 @@ public class Timer implements Runnable{
 		}
 	}
 
-	private void setNextActionAfterPause() {
+	private void prepareForActionAfterPause() {
 		//Restore seconds state
 		countComp.setSec(seconds);
 		//Switch for actions
