@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
+
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -15,32 +17,47 @@ import mainFrame.Main;
 import mainFrame.MusicPlayer;
 
 public class MusicPlayerTest {
-	private MusicPlayer musicPlayer;
 	
 	
-	@Before
+	@Test
 	public void initObjects() {
 		try {
-			musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			assertNotNull(musicPlayer);
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			fail();
+		}
+		
+	}
+	
+	@Test
+	public void testPlayMusic() {
+		try {
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			musicPlayer.play();
+			assertFalse(musicPlayer.isRunning());
+			musicPlayer.pause();
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			fail();
 		}
 	}
 	
 	@Test
-	public void testPlayMusic() {
-		musicPlayer.play();
-		assertFalse(musicPlayer.isRunning());
-		musicPlayer.pause();
-	
-	}
-	
-	@Test
 	public void testPauseMusic() {
-		musicPlayer.play();
-		musicPlayer.pause();
-		assertTrue(musicPlayer.isRunning());
-		assertEquals(musicPlayer.getFramePosition(), musicPlayer.getLastFrame());
+		try {
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			musicPlayer.play();
+			try {
+				TimeUnit.MILLISECONDS.sleep(10);
+			} catch (InterruptedException e) {
+				fail();
+			}
+			musicPlayer.pause();
+			assertFalse(musicPlayer.isRunning());
+			assertEquals(musicPlayer.getFramePosition(), musicPlayer.getLastFrame());
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			fail();
+		}
 	}
 	
 	@Test
@@ -52,7 +69,14 @@ public class MusicPlayerTest {
 	
 	@Test
 	public void testGetNextSongName() {
-		String songName=musicPlayer.getNextSongName();
-		assertTrue(musicPlayer.songsNames.contains(songName));
+		try {
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			assertNotNull(musicPlayer);
+			String songName=musicPlayer.getNextSongName();
+			assertTrue(musicPlayer.songsNames.contains(songName));
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			fail();
+		}
+		
 	}
 }

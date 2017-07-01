@@ -92,8 +92,8 @@ public class MusicPlayer {
 			return;
 		}
 		if (this.musicClip.isRunning()) {
-            lastFrame=this.musicClip.getFramePosition();
             this.musicClip.stop();
+            this.lastFrame=this.musicClip.getFramePosition();
         }else { 
         	System.out.println("Music isn't playing");
         }

@@ -1,9 +1,8 @@
 package tests;
 
 import static org.junit.Assert.*;
-
 import java.util.prefs.Preferences;
-
+import javax.swing.JButton;
 import org.junit.Test;
 import mainFrame.Countdown;
 import mainFrame.Main;
@@ -32,6 +31,12 @@ public class MainTest {
 		assertNotNull(node);
 	}
 	
-	
+	@Test
+	public void testGetStartButton() {
+		Main frame=new Main();
+		JButton startBtn=frame.getStartButton();
+		assertNotNull(startBtn);
+		assertTrue(Main.tabataPanel.isAncestorOf(startBtn));
+	}
 
 }
