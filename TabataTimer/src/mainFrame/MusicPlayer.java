@@ -18,9 +18,9 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 public class MusicPlayer {
 	private int lastFrame;
+	private int musicIndx;
 	private String songName;
 	private FloatControl gainControl;
-	private int musicIndx;
 	private Clip musicClip;
 	public final ArrayList<String> songsNames=loadSongsNames();
 	

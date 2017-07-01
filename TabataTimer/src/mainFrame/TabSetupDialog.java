@@ -19,7 +19,6 @@ import javax.swing.JPanel;
 public class TabSetupDialog extends JDialog{
 	Rounds roundsComp;
 	
-	
 	public TabSetupDialog(JFrame owner) {
 		super(owner, "Tabata Setup", true);
 		roundsComp=Main.getRoundsComponent();

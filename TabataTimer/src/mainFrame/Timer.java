@@ -7,8 +7,6 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import mainFrame.Main;
 
-
-
 //Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
 //That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
 public class Timer implements Runnable{

@@ -1,4 +1,5 @@
 package mainFrame;
+
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -14,7 +15,6 @@ public class Rounds extends JComponent{
 	private int tabats=0;
 	private int tabatsTotal;
 	private int fontSize=80;
-	
 	private int DEFAULT_WIDTH=950;
 	private int DEFAULT_HEIGHT=200;
 	
@@ -35,7 +35,7 @@ public class Rounds extends JComponent{
 	public void paintComponent(Graphics g) {
 		Graphics2D g2=(Graphics2D) g;
 		//Font size should be dependent of screen resolution, 
-				//because on res lower than Full HD this font is too big and doesn't fits in the window
+		//because on res lower than Full HD this font is too big and doesn't fits in the window
 		Font sansbold80=new Font("SansSerif", Font.BOLD, fontSize);
 		FontRenderContext context=g2.getFontRenderContext();
 		Rectangle2D bounds=sansbold80.getStringBounds("Runds:8/8 Tabaty:0/10", context);
@@ -72,8 +72,7 @@ public class Rounds extends JComponent{
 	public int getRound() {
 		return this.round;
 	}
-	
-	
+		
 	public void setTotalRounds(int x) {
 		this.totalRounds=x;
 	}
@@ -85,8 +84,7 @@ public class Rounds extends JComponent{
 	public void addTabTotal(int x) {
 		this.tabatsTotal+=x;
 	}
-	
-	
+		
 	public void setTab(int x) {
 		this.tabats=x;
 	}
@@ -98,8 +96,7 @@ public class Rounds extends JComponent{
 	public int getTab() {
 		return this.tabats;
 	}
-	
-	
+		
 	public void setTabTotal(int x) {
 		this.tabatsTotal=x;
 	}
