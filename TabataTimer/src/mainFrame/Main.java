@@ -28,21 +28,15 @@ import java.util.prefs.Preferences;
 
 public class Main extends JFrame {
 	public static TabataPanel tabataPanel;
-	
-	//Clips for playing music
-    public static MusicPlayer currentSong;	
-    public static MusicPlayer timerSong; 
-    public static MusicPlayer endingSong;  
+	public static TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
+	public final static Main frame=new Main(); //Main JFrame of application
     private JMenuBar menuBar;	//Menu bar for main frame
     private JButton startButton;
-    public static TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
-	final static Main frame=new Main(); //Main JFrame of application
 	public final Preferences root=Preferences.userRoot();
 	public final Preferences node=root.node("/TabataTimer");
 	
 	public Main() {
-		prepareMusic();
 		setFrameSize();
 		setLocationRelativeTo(null);
 		
@@ -54,7 +48,7 @@ public class Main extends JFrame {
 		Action startAction=new StartAction("Start");
 		setTabataPanelComponents(startAction);
 		add(tabataPanel);
-
+		
 		setInputMap(startAction);
 		
 		menuBar=new JMenuBar();
@@ -102,19 +96,6 @@ public class Main extends JFrame {
 		amap.put("panel.start", startAction);
 	}
 	
-	private void prepareMusic() {
-		try {
-			endingSong=new MusicPlayer("Bill_Conti_-_Gonna_Fly_Now.wav");
-			timerSong=new MusicPlayer("single_round_no_music.wav");
-		} catch (LineUnavailableException e2) {
-			e2.printStackTrace();
-		} catch (IOException e2) {
-			e2.printStackTrace();
-		} catch (UnsupportedAudioFileException e2) {
-			e2.printStackTrace();
-		}
-	}
-
 	private void setFrameSize() {
 		Toolkit kit=Toolkit.getDefaultToolkit();
 		Dimension screenSize=kit.getScreenSize();
@@ -229,8 +210,7 @@ public class Main extends JFrame {
 	public Preferences getPreferencesNode() {
 		return node;
 	}
-	
-	
+		
 	//Class responsible for Action. It's starting and interrupting Thread Timer when specific action is performed.
 	//Those action are clicking the "Start" button and pressing 'SPACE' key
 	public class StartAction extends AbstractAction{
@@ -263,6 +243,5 @@ public class Main extends JFrame {
 			}
 		}
 	}
-		
-	
+			
 }

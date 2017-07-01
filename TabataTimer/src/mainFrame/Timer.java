@@ -22,6 +22,10 @@ public class Timer implements Runnable{
 	private boolean reset=false;
 	private Countdown countComp;
 	private Rounds roundsComp;
+	//Clips for playing music
+    public static MusicPlayer currentSong;	
+    public static MusicPlayer timerSong; 
+    public static MusicPlayer endingSong;
 	private ActionEnum actionToDo=ActionEnum.BEFORE;
 	//Enum for specific actions in tabata. Used to control program flow in switch
 	private enum ActionEnum {RESET, BEFORE, EXERCISE, REST, RESTROUND, ENDROUND};
@@ -29,6 +33,7 @@ public class Timer implements Runnable{
 	public void run() {
 		countComp=Main.getCountdownComponent();
 		roundsComp=Main.getRoundsComponent();
+		prepareMusic();
 		try{
 			while(!Thread.currentThread().isInterrupted()) {
 				if(!paused) {
@@ -36,16 +41,16 @@ public class Timer implements Runnable{
 						case RESET:
 							roundsComp.setRound(0);
 							roundsComp.setTab(0);
-							Main.timerSong.skipSongToEnd();;
+							timerSong.skipSongToEnd();;
 							seconds=0;
 							break;
 						case BEFORE:
 							roundsComp.setRound(0);
 							roundsComp.setTab(0);
-							Main.timerSong.skipSongToEnd();
-							if(Main.currentSong==null) {
+							timerSong.skipSongToEnd();
+							if(currentSong==null) {
 								try{
-									Main.currentSong=new MusicPlayer();
+									currentSong=new MusicPlayer();
 								}catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -60,14 +65,14 @@ public class Timer implements Runnable{
 							Main.tabataPanel.setColors(Color.WHITE, Color.BLUE);
 							Main.tabataPanel.repaint();
 							
-							Main.timerSong.play();
+							timerSong.play();
 							playTimerClip=true;
 							changeMusic=true;
 							runed=false;
 				
 							break;
 						case EXERCISE:
-							Main.currentSong.setGainValue(5.0f);
+							currentSong.setGainValue(5.0f);
 							roundsComp.addRound(1);
 							Main.tabataPanel.setColors(Color.WHITE, Color.GREEN);
 							seconds=20;
@@ -77,22 +82,22 @@ public class Timer implements Runnable{
 							
 							break;
 						case REST:
-							if(!Main.currentSong.isRunning()) 
-								Main.currentSong.play();
+							if(!currentSong.isRunning()) 
+								currentSong.play();
 							Main.tabataPanel.setColors(Color.WHITE, Color.RED);
 							seconds=10;
 							countComp.setSec(seconds);
 							Main.tabataPanel.repaint();
 							
 							changeMusic=true;
-							Main.currentSong.setGainValue(-15.0f);
-							Main.timerSong.pause();
-							Main.timerSong.skipSongToEnd();
-							Main.timerSong.play();
+							currentSong.setGainValue(-15.0f);
+							timerSong.pause();
+							timerSong.skipSongToEnd();
+							timerSong.play();
 							
 							break;
 						case RESTROUND:
-							Main.timerSong.pause();
+							timerSong.pause();
 							
 							seconds=30;
 							countComp.setSec(seconds);
@@ -103,7 +108,7 @@ public class Timer implements Runnable{
 							playTimerClip=false;
 							
 							changeMusic=true;
-							Main.currentSong.setGainValue(-15.0f);
+							currentSong.setGainValue(-15.0f);
 									
 							break;
 						case ENDROUND:
@@ -150,7 +155,7 @@ public class Timer implements Runnable{
 						case RESET:
 							roundsComp.setRound(0);
 							roundsComp.setTab(0);
-							Main.timerSong.skipSongToEnd();
+							timerSong.skipSongToEnd();
 							seconds=0;
 							Main.tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 							break;
@@ -160,20 +165,20 @@ public class Timer implements Runnable{
 					}
 					Main.tabataPanel.repaint();
 					
-					if(Main.timerSong!=null&&!Main.timerSong.isRunning()&&playTimerClip)
-						Main.timerSong.play();
-					if(Main.currentSong!=null&&!Main.currentSong.isRunning()&&playCurrentClip)
-						Main.currentSong.play();
-					if(Main.endingSong!=null&&!Main.endingSong.isRunning()&&playEndingClip)
-						Main.endingSong.play();
+					if(timerSong!=null&&!timerSong.isRunning()&&playTimerClip)
+						timerSong.play();
+					if(currentSong!=null&&!currentSong.isRunning()&&playCurrentClip)
+						currentSong.play();
+					if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
+						endingSong.play();
 												
 					paused=false;
 				}
-				if(Main.endingSong!=null&&!Main.endingSong.isRunning()&&playEndingClip)
-					Main.endingSong.play();
+				if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
+					endingSong.play();
 				
 				while(actionToDo==ActionEnum.ENDROUND) {
-					if(!Main.endingSong.isRunning()) {
+					if(!endingSong.isRunning()) {
 						actionToDo=ActionEnum.RESET;
 						Thread.currentThread().interrupt();
 					}
@@ -188,17 +193,17 @@ public class Timer implements Runnable{
 					roundsComp.repaint();
 					
 					if((changeMusic&&seconds==5)||(actionToDo==ActionEnum.RESTROUND&&seconds==25)||(actionToDo==ActionEnum.RESTROUND&&seconds==5)) {
-						if(Main.currentSong!=null&&Main.currentSong.isRunning())
-							Main.currentSong.pause();
+						if(currentSong!=null&&currentSong.isRunning())
+							currentSong.pause();
 						
-						Main.currentSong=new MusicPlayer(Main.currentSong.getNextSongName());
-						Main.currentSong.setGainValue(-15.0f);
-						Main.currentSong.play();
+						currentSong=new MusicPlayer(currentSong.getNextSongName());
+						currentSong.setGainValue(-15.0f);
+						currentSong.play();
 						changeMusic=false;
 					}
 
 					if(actionToDo==ActionEnum.RESTROUND&&seconds==10)
-						Main.timerSong.play();
+						timerSong.play();
 
 				}
 				
@@ -209,8 +214,8 @@ public class Timer implements Runnable{
 						if(roundsComp.getRound()==roundsComp.getTotalRounds()) {
 							//check if training is done and if yes, go to reset
 							if(roundsComp.getTab()+1==roundsComp.getTabTotal()) {
-								Main.currentSong.pause();
-								Main.timerSong.pause();
+								currentSong.pause();
+								timerSong.pause();
 								Main.tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 								Main.tabataPanel.repaint();
 								actionToDo=ActionEnum.ENDROUND;
@@ -248,8 +253,8 @@ public class Timer implements Runnable{
 			}			
 		}catch(InterruptedException e) {
 			paused=true;
-			Main.currentSong.pause();
-			Main.timerSong.pause();
+			currentSong.pause();
+			timerSong.pause();
 			System.out.println("Timer interrupted!");
 		} catch (LineUnavailableException e) {
 			e.printStackTrace();
@@ -257,6 +262,21 @@ public class Timer implements Runnable{
 			e.printStackTrace();
 		} catch (UnsupportedAudioFileException e) {
 			e.printStackTrace();
+		}
+	}
+
+	private void prepareMusic() {
+		try {
+			if(endingSong==null)
+				endingSong=new MusicPlayer("Bill_Conti_-_Gonna_Fly_Now.wav");
+			if(timerSong==null)
+				timerSong=new MusicPlayer("single_round_no_music.wav");
+		} catch (LineUnavailableException e2) {
+			e2.printStackTrace();
+		} catch (IOException e2) {
+			e2.printStackTrace();
+		} catch (UnsupportedAudioFileException e2) {
+			e2.printStackTrace();
 		}
 	}
 }
