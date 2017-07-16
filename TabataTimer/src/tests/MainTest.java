@@ -2,7 +2,6 @@ package tests;
 
 import static org.junit.Assert.*;
 import java.util.prefs.Preferences;
-import javax.swing.JButton;
 import org.junit.Test;
 import mainFrame.Countdown;
 import mainFrame.Main;
@@ -30,5 +29,5 @@ public class MainTest {
 		Preferences node=frame.getPreferencesNode();
 		assertNotNull(node);
 	}
-
+	
 }

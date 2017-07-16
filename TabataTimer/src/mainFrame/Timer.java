@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import mainFrame.Main;
 
 //Timer thread is responsible for changing state of tabataPanel components. It is also responsible for the whole process of Tabata.
 //That means it plays and stops music when needed, changes background colour, changes countdown, rounds and tabats values.
@@ -40,7 +39,8 @@ public class Timer implements Runnable{
 				else
 					prepareForAction();
 
-				handleEndroundActions();
+				if(actionToDo==ActionEnum.ENDROUND)
+					handleEndroundActions();
 								
 				preformTimerActionForEachSecond();
 				
@@ -51,7 +51,9 @@ public class Timer implements Runnable{
 			paused=true;
 			currentSong.pause();
 			timerSong.pause();
+			endingSong.pause();
 			System.out.println("Timer interrupted!");
+			Thread.currentThread().interrupt();
 		}
 	}
 	
@@ -85,21 +87,32 @@ public class Timer implements Runnable{
 		}
 	}
 	
-	private void handleEndroundActions() {
+	private void handleEndroundActions() throws InterruptedException {
 		if(endingSong!=null&&!endingSong.isRunning()&&playEndingClip)
 			endingSong.play();
-		
-		while(actionToDo==ActionEnum.ENDROUND) {
+		TimeUnit.MILLISECONDS.sleep(500);
+		System.out.println(reset);
+		while(reset==false) {
 			if(!endingSong.isRunning()) {
-				actionToDo=ActionEnum.RESET;
-				Thread.currentThread().interrupt();
+				System.out.println("reset");
+				reset=true;
+				break;
+			}else if(Thread.currentThread().isInterrupted()) {
+				System.out.println("reset");
+				reset=true;
+				endingSong.pause();
+				break;
 			}
+			if(endingSong.getFramePosition()==endingSong.getFrameLenght())
+				System.out.println("End");
 		}
+		System.out.println("Exit");
 	}
 	
 	private void prepareForAction(){
 		switch(actionToDo) {
 			case RESET:
+				reset=false;
 				roundsComp.setRound(0);
 				roundsComp.setTab(0);
 				timerSong.skipSongToEnd();;
@@ -208,9 +221,11 @@ public class Timer implements Runnable{
 				Main.tabataPanel.setColors(Color.WHITE, Color.BLUE);
 				break;
 			case ENDROUND:
-				roundsComp.addTab(1);
+				//roundsComp.addTab(1);
 				Main.tabataPanel.setColors(Color.WHITE, Color.YELLOW);
-				playEndingClip=true;
+				playEndingClip=false;
+				reset=false;
+				actionToDo=ActionEnum.RESET;
 				break;
 			case RESET:
 				roundsComp.setRound(0);
@@ -263,8 +278,12 @@ public class Timer implements Runnable{
 				actionToDo=ActionEnum.EXERCISE;
 				break;
 			case ENDROUND:
-				if(reset)
+				if(reset) {
 					actionToDo=ActionEnum.RESET;
+					playEndingClip=false;
+					Thread.currentThread().interrupt();
+					return; //from Thread
+				}
 				break;
 			case RESET:
 				actionToDo=ActionEnum.BEFORE;

@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import javax.swing.*;
+
 import java.util.prefs.Preferences;
 
 
@@ -204,7 +205,7 @@ public class Main extends JFrame {
 	//Class responsible for Action. It's starting and interrupting Thread Timer when specific action is performed.
 	//Those action are clicking the "Start" button and pressing 'SPACE' key
 	public class StartAction extends AbstractAction{
-		//When flag is true that means Timer must be started and when flag is false, it must be interpuped 
+		//When flag is true that means Timer must be started and when flag is false, it must be interrupted 
 		private boolean flag=true;
 		private Runnable r=new Timer();
 		private Thread t;

@@ -79,4 +79,29 @@ public class MusicPlayerTest {
 		}
 		
 	}
+	
+	@Test
+	public void testGetFrameLenght() {
+		try {
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			assertNotNull(musicPlayer);
+			int frameLenght=musicPlayer.getFrameLenght();
+			assertEquals(frameLenght, 1439887);
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			fail();
+		}
+	}
+	
+	@Test
+	public void testSkipSongToEnd() {
+		try {
+			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			assertNotNull(musicPlayer);
+			musicPlayer.skipSongToEnd();
+			int frameLenght=musicPlayer.getFrameLenght();
+			assertEquals(frameLenght, 1439887);
+		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			fail();
+		}
+	}
 }

@@ -117,6 +117,10 @@ public class MusicPlayer {
 		this.lastFrame=this.musicClip.getFrameLength();
 	}
 	
+	public int getFrameLenght() {
+		return this.musicClip.getFrameLength();
+	}
+	
 	public void setGainValue(float value) {
 		this.gainControl.setValue(value);
 	}
