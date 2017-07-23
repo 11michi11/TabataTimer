@@ -41,18 +41,6 @@ public class MusicPlayer {
 		return songsNames.size();
 	}
 	
-	
-	public String getNextSongName() {
-		int rand;
-		Random rn=new Random();
-		do {
-			rand=rn.nextInt(getSongsNamesArraySize());
-		}while(this.musicIndx==rand);
-		this.musicIndx=rand;
-		
-		return songsNames.get(this.musicIndx);
-	}
-	
 	private ArrayList<String> loadSongsNames() {
 		ArrayList<String> names = new ArrayList<String>();
 		InputStream namesStream=this.getClass().getClassLoader().getResourceAsStream("resources/names.txt");
@@ -125,9 +113,14 @@ public class MusicPlayer {
 		this.gainControl.setValue(value);
 	}
 	
-	
-
-	
-	
-
+	public String getNextSongName() {
+		int rand;
+		Random rn=new Random();
+		do {
+			rand=rn.nextInt(getSongsNamesArraySize());
+		}while(this.musicIndx==rand);
+		this.musicIndx=rand;
+		
+		return songsNames.get(this.musicIndx);
+	}
 }

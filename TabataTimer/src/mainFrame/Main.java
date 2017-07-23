@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import javax.swing.*;
-
 import java.util.prefs.Preferences;
 
 
@@ -23,6 +22,7 @@ public class Main extends JFrame {
 	public final static Main frame=new Main(); //Main JFrame of application
     private JMenuBar menuBar;	//Menu bar for main frame
     private JButton startButton;
+    private JButton restartButton;
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
 	public final Preferences root=Preferences.userRoot();
 	public final Preferences node=root.node("/TabataTimer");
@@ -71,6 +71,19 @@ public class Main extends JFrame {
 		startButton=new JButton(startAction);
 		tabataPanel.add(startButton);
 		 
+		restartButton=new JButton("Restart");
+		restartButton.setToolTipText("Reset Tabata");
+		restartButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Timer.resetTabata();				
+				
+			}
+		});
+		restartButton.setEnabled(false);
+		tabataPanel.add(restartButton);
+		
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
 		tabataPanel.add(count);
@@ -221,10 +234,12 @@ public class Main extends JFrame {
 				t.start();
 				//Changing start button description
 				startButton.setText("Pause");
+				restartButton.setEnabled(false);
 				flag=false;
 			}else {
 				//Changing start button description
 				startButton.setText("Start");
+				restartButton.setEnabled(true);
 				//Changing background color of tabataPanel
 				tabataPanel.setColors(Color.WHITE, Color.BLUE);
 				tabataPanel.repaint();

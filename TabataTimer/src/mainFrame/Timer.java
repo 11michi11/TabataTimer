@@ -24,7 +24,7 @@ public class Timer implements Runnable{
 	private Countdown countComp;
 	private Rounds roundsComp;
 	
-	private ActionEnum actionToDo=ActionEnum.BEFORE;
+	private static ActionEnum actionToDo=ActionEnum.BEFORE;
 	//Enum for specific actions in tabata. Used to control program flow in switch
 	private enum ActionEnum {RESET, BEFORE, EXERCISE, REST, RESTROUND, ENDROUND};
 	
@@ -115,8 +115,11 @@ public class Timer implements Runnable{
 				reset=false;
 				roundsComp.setRound(0);
 				roundsComp.setTab(0);
-				timerSong.skipSongToEnd();;
-				seconds=0;
+				countComp.setSec(0);
+				timerSong.skipSongToEnd();
+				currentSong.skipSongToEnd();
+				seconds=countComp.getSec();
+				playCurrentClip=false;
 				break;
 			case BEFORE:
 				roundsComp.setRound(0);
@@ -131,8 +134,8 @@ public class Timer implements Runnable{
 				}
 				System.out.println(actionToDo.toString());
 				if(!runed) {
-					seconds=10;
-					countComp.setSec(seconds);
+					countComp.setSec(10);
+					seconds=countComp.getSec();
 					runed=true;
 				}
 				
@@ -149,8 +152,8 @@ public class Timer implements Runnable{
 				currentSong.setGainValue(5.0f);
 				roundsComp.addRound(1);
 				Main.tabataPanel.setColors(Color.WHITE, Color.GREEN);
-				seconds=20;
-				countComp.setSec(seconds);
+				countComp.setSec(20);
+				seconds=countComp.getSec();
 				Main.tabataPanel.repaint();
 				playCurrentClip=true;
 				
@@ -159,8 +162,8 @@ public class Timer implements Runnable{
 				if(!currentSong.isRunning()) 
 					currentSong.play();
 				Main.tabataPanel.setColors(Color.WHITE, Color.RED);
-				seconds=10;
-				countComp.setSec(seconds);
+				countComp.setSec(10);
+				seconds=countComp.getSec();
 				Main.tabataPanel.repaint();
 				
 				changeMusic=true;
@@ -172,9 +175,9 @@ public class Timer implements Runnable{
 				break;
 			case RESTROUND:
 				timerSong.pause();
-				
-				seconds=30;
-				countComp.setSec(seconds);
+
+				countComp.setSec(30);
+				seconds=countComp.getSec();
 				roundsComp.addTab(1); 
 				roundsComp.setRound(0);
 				Main.tabataPanel.setColors(Color.WHITE, Color.BLUE);
@@ -231,7 +234,10 @@ public class Timer implements Runnable{
 				roundsComp.setRound(0);
 				roundsComp.setTab(0);
 				timerSong.skipSongToEnd();
-				seconds=0;
+				currentSong.skipSongToEnd();
+				countComp.setSec(0);
+				seconds=countComp.getSec();
+				playCurrentClip=false;
 				Main.tabataPanel.setColors(Color.WHITE, Color.YELLOW);
 				break;
 			default:
@@ -316,5 +322,9 @@ public class Timer implements Runnable{
 		} catch (UnsupportedAudioFileException e2) {
 			e2.printStackTrace();
 		}
+	}
+
+	public static void resetTabata() {
+		actionToDo=ActionEnum.RESET;
 	}
 }
