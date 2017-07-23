@@ -13,7 +13,7 @@ import java.util.prefs.Preferences;
  * It also plays music for each round.
  * Training can be adjusted in settings menu. 
  * @author Micha³ Pompa
- * @version Alpha 2.1 
+ * @version Alpha 3.0 
  */
 
 public class Main extends JFrame {
@@ -52,7 +52,7 @@ public class Main extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-				frame.setTitle("TabataTimer - Alfa 2.0");
+				frame.setTitle("TabataTimer - Alfa 3.0");
 				frame.setVisible(true);
 				
 				JOptionPane.showMessageDialog(frame,
@@ -60,7 +60,8 @@ public class Main extends JFrame {
 						+ "To start or pause Tabata press SPACE.\n"
 						+ "To setup your training, go to SETTINGS.\n"
 						+ "If you get lost, go to HELP\n"
-						+ "It is recommended use in fullscreen mode\n",
+						+ "It is recommended use in fullscreen mode\n"
+						+ "You can change font size in SETTINGS\n",
 						"Start Messege", JOptionPane.PLAIN_MESSAGE);
 				
 			}
@@ -176,7 +177,10 @@ public class Main extends JFrame {
 						+ "(you can realax for 30 seconds).\n"
 						+ "Number of rounds in each Tabata and number of Tabats\n"
 						+ "in trening can by adjusted in SETTINGS -> Setup Tabata.\n"
-						+ "For example excercises go to HELP -> EXAMPLES.\n\n"
+						+ "For example excercises go to HELP -> EXAMPLES.\n"
+						+ "If some components don't fit in the window,\n"
+						+ "go to SETTING -> Change font size,\n"
+						+ "and adjust font size to your screen resolution.\n\n"
 						+ "Author: Micha³ Pompa\n"
 						+ "Contact: 11michi11@gmail.com",
 						"About", JOptionPane.PLAIN_MESSAGE);
