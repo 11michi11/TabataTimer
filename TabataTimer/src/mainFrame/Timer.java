@@ -21,6 +21,7 @@ public class Timer implements Runnable{
 	private boolean playEndingClip;
 	private boolean paused=false;
 	private boolean reset=false;
+	private static boolean roundReset=false;
 	private Countdown countComp;
 	private Rounds roundsComp;
 	
@@ -150,7 +151,14 @@ public class Timer implements Runnable{
 				break;
 			case EXERCISE:
 				currentSong.setGainValue(5.0f);
-				roundsComp.addRound(1);
+				if(!roundReset)
+					roundsComp.addRound(1);
+				else {
+					currentSong.setSongOnFiveSeconds();
+					timerSong.setSongOnTenSeconds();
+					roundReset=false;
+				}
+				
 				Main.tabataPanel.setColors(Color.WHITE, Color.GREEN);
 				countComp.setSec(20);
 				seconds=countComp.getSec();
@@ -207,6 +215,15 @@ public class Timer implements Runnable{
 		//Switch for actions
 		switch(actionToDo) {
 			case EXERCISE:
+				if(roundReset) {
+					changeMusic=false;
+					currentSong.setGainValue(5.0f);
+					currentSong.setSongOnFiveSeconds();
+					timerSong.setSongOnTenSeconds();
+					countComp.setSec(20);
+					seconds=countComp.getSec();
+					roundReset=false;
+				}
 				Main.tabataPanel.setColors(Color.WHITE, Color.GREEN);
 				break;
 			case REST:
@@ -326,5 +343,10 @@ public class Timer implements Runnable{
 
 	public static void resetTabata() {
 		actionToDo=ActionEnum.RESET;
+	}
+	
+	public static void resetRound() {
+		actionToDo=ActionEnum.EXERCISE;
+		roundReset=true;
 	}
 }

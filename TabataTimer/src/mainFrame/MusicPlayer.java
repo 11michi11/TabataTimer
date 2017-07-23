@@ -109,6 +109,16 @@ public class MusicPlayer {
 		return this.musicClip.getFrameLength();
 	}
 	
+	public void setSongOnFiveSeconds() {
+		musicClip.setFramePosition(240000);
+		lastFrame=240000;
+	}
+	
+	public void setSongOnTenSeconds() {
+		musicClip.setFramePosition(480000);
+		lastFrame=480000;
+	}
+
 	public void setGainValue(float value) {
 		this.gainControl.setValue(value);
 	}

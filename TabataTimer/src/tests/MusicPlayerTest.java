@@ -18,11 +18,12 @@ import mainFrame.MusicPlayer;
 
 public class MusicPlayerTest {
 	
+	MusicPlayer musicPlayer;
 	
-	@Test
+	@Before
 	public void initObjects() {
 		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
+			musicPlayer=new MusicPlayer("single_round_no_music.wav");
 			assertNotNull(musicPlayer);
 		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
 			fail();
@@ -32,32 +33,22 @@ public class MusicPlayerTest {
 	
 	@Test
 	public void testPlayMusic() {
-		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
-			musicPlayer.play();
-			assertFalse(musicPlayer.isRunning());
-			musicPlayer.pause();
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-			fail();
-		}
+		musicPlayer.play();
+		assertFalse(musicPlayer.isRunning());
+		musicPlayer.pause();
 	}
 	
 	@Test
 	public void testPauseMusic() {
+		musicPlayer.play();
 		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
-			musicPlayer.play();
-			try {
-				TimeUnit.MILLISECONDS.sleep(10);
-			} catch (InterruptedException e) {
-				fail();
-			}
-			musicPlayer.pause();
-			assertFalse(musicPlayer.isRunning());
-			assertEquals(musicPlayer.getFramePosition(), musicPlayer.getLastFrame());
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+			TimeUnit.MILLISECONDS.sleep(10);
+		} catch (InterruptedException e) {
 			fail();
 		}
+		musicPlayer.pause();
+		assertFalse(musicPlayer.isRunning());
+		assertEquals(musicPlayer.getFramePosition(), musicPlayer.getLastFrame());
 	}
 	
 	@Test
@@ -69,39 +60,35 @@ public class MusicPlayerTest {
 	
 	@Test
 	public void testGetNextSongName() {
-		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
-			assertNotNull(musicPlayer);
-			String songName=musicPlayer.getNextSongName();
-			assertTrue(musicPlayer.songsNames.contains(songName));
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-			fail();
-		}
-		
+		String songName=musicPlayer.getNextSongName();
+		assertTrue(musicPlayer.songsNames.contains(songName));
 	}
 	
 	@Test
 	public void testGetFrameLenght() {
-		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
-			assertNotNull(musicPlayer);
-			int frameLenght=musicPlayer.getFrameLenght();
-			assertEquals(frameLenght, 1439887);
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-			fail();
-		}
+		int frameLenght=musicPlayer.getFrameLenght();
+		assertEquals(frameLenght, 1439887);
 	}
 	
 	@Test
 	public void testSkipSongToEnd() {
-		try {
-			MusicPlayer musicPlayer=new MusicPlayer("single_round_no_music.wav");
-			assertNotNull(musicPlayer);
-			musicPlayer.skipSongToEnd();
-			int frameLenght=musicPlayer.getFrameLenght();
-			assertEquals(frameLenght, 1439887);
-		} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
-			fail();
-		}
+		musicPlayer.skipSongToEnd();
+		int frameLenght=musicPlayer.getFrameLenght();
+		assertEquals(frameLenght, 1439887);
+		
+	}
+	
+	@Test
+	public void testSetSongOnFiveSeconds() {
+		musicPlayer.setSongOnFiveSeconds();
+		int frameLenght=musicPlayer.getFramePosition();
+		assertEquals(frameLenght, 240000);
+	}
+	
+	@Test
+	public void testSetSongOnTenSeconds() {
+		musicPlayer.setSongOnTenSeconds();
+		int frameLenght=musicPlayer.getFramePosition();
+		assertEquals(frameLenght, 480000);
 	}
 }

@@ -22,7 +22,8 @@ public class Main extends JFrame {
 	public final static Main frame=new Main(); //Main JFrame of application
     private JMenuBar menuBar;	//Menu bar for main frame
     private JButton startButton;
-    private JButton restartButton;
+    private JButton restartTabataButton;
+    private JButton restartRoundButton;
     private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
 	public final Preferences root=Preferences.userRoot();
 	public final Preferences node=root.node("/TabataTimer");
@@ -67,23 +68,6 @@ public class Main extends JFrame {
 	}
 	
 	private void setTabataPanelComponents(Action startAction) {
-		//Can be started by button or pressing space key.
-		startButton=new JButton(startAction);
-		tabataPanel.add(startButton);
-		 
-		restartButton=new JButton("Restart");
-		restartButton.setToolTipText("Reset Tabata");
-		restartButton.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				Timer.resetTabata();				
-				
-			}
-		});
-		restartButton.setEnabled(false);
-		tabataPanel.add(restartButton);
-		
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
 		tabataPanel.add(count);
@@ -91,6 +75,35 @@ public class Main extends JFrame {
 		Rounds rounds=new Rounds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		rounds.setOpaque(false);
 		tabataPanel.add(rounds);
+		
+		//Can be started by button or pressing space key.
+		startButton=new JButton(startAction);
+		tabataPanel.add(startButton);
+		 
+		restartTabataButton=new JButton("Restart");
+		restartTabataButton.setToolTipText("Reset Tabata");
+		restartTabataButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Timer.resetTabata();				
+				
+			}
+		});
+		restartTabataButton.setEnabled(false);
+		tabataPanel.add(restartTabataButton);
+		
+		restartRoundButton=new JButton("Restart Round");
+		restartRoundButton.setToolTipText("Reset current round");
+		restartRoundButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Timer.resetRound();
+			}
+		});
+		restartRoundButton.setEnabled(false);
+		tabataPanel.add(restartRoundButton);
 	}
 
 	private void setInputMap(Action startAction) {
@@ -234,12 +247,14 @@ public class Main extends JFrame {
 				t.start();
 				//Changing start button description
 				startButton.setText("Pause");
-				restartButton.setEnabled(false);
+				restartTabataButton.setEnabled(false);
+				restartRoundButton.setEnabled(false);
 				flag=false;
 			}else {
 				//Changing start button description
 				startButton.setText("Start");
-				restartButton.setEnabled(true);
+				restartTabataButton.setEnabled(true);
+				restartRoundButton.setEnabled(true);
 				//Changing background color of tabataPanel
 				tabataPanel.setColors(Color.WHITE, Color.BLUE);
 				tabataPanel.repaint();
