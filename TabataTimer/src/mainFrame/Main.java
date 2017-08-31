@@ -4,6 +4,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.border.Border;
+
 import java.util.prefs.Preferences;
 
 
@@ -17,16 +19,16 @@ import java.util.prefs.Preferences;
  */
 
 public class Main extends JFrame {
-	public static TabataPanel tabataPanel;
-	public static TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
-	public final static Main frame=new Main(); //Main JFrame of application
-    private JMenuBar menuBar;	//Menu bar for main frame
-    private JButton startButton;
-    private JButton restartTabataButton;
-    private JButton restartRoundButton;
-    private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
-	public final Preferences root=Preferences.userRoot();
-	public final Preferences node=root.node("/TabataTimer");
+   public static TabataPanel tabataPanel;
+   public static TabSetupDialog tabSetupDialog;	//Dialog responsible for showing tabata setup dialog box
+   public final static Main frame=new Main(); //Main JFrame of application
+   public final Preferences root=Preferences.userRoot();
+   public final Preferences node=root.node("/TabataTimer");
+   private JMenuBar menuBar;	//Menu bar for main frame
+   private JButton startButton;
+   private JButton restartTabataButton;
+   private JButton restartRoundButton;
+   private FontSizeSetupDialog fontSizeSetupDialog; //Dialog responsible for showing font size setup dialog box
 	
 	public Main() {
 		setFrameSize();
@@ -71,15 +73,18 @@ public class Main extends JFrame {
 	private void setTabataPanelComponents(Action startAction) {
 		Countdown count=new Countdown(20);
 		count.setOpaque(false);
-		tabataPanel.add(count);
+		tabataPanel.add(count, BorderLayout.NORTH);
 		
 		Rounds rounds=new Rounds(node.getInt("rounds", 8),node.getInt("tabats", 3));
 		rounds.setOpaque(false);
-		tabataPanel.add(rounds);
+		tabataPanel.add(rounds, BorderLayout.CENTER);
+		
+		JPanel buttonsWrap = new JPanel();
+		buttonsWrap.setBackground(new Color(0,0,0,0)); //Give the transparent effect 
 		
 		//Can be started by button or pressing space key.
 		startButton=new JButton(startAction);
-		tabataPanel.add(startButton);
+		buttonsWrap.add(startButton);
 		 
 		restartTabataButton=new JButton("Restart");
 		restartTabataButton.setToolTipText("Reset Tabata");
@@ -92,7 +97,7 @@ public class Main extends JFrame {
 			}
 		});
 		restartTabataButton.setEnabled(false);
-		tabataPanel.add(restartTabataButton);
+		buttonsWrap.add(restartTabataButton);
 		
 		restartRoundButton=new JButton("Restart Round");
 		restartRoundButton.setToolTipText("Reset current round");
@@ -104,7 +109,9 @@ public class Main extends JFrame {
 			}
 		});
 		restartRoundButton.setEnabled(false);
-		tabataPanel.add(restartRoundButton);
+		buttonsWrap.add(restartRoundButton);
+		
+		tabataPanel.add(buttonsWrap, BorderLayout.SOUTH);
 	}
 
 	private void setInputMap(Action startAction) {
