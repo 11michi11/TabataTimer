@@ -50,14 +50,14 @@
 			</font>
 		</Label>
 		<Label fx:id="roundLabel" layoutX="44.0" layoutY="354.0"
-			prefHeight="77.0" prefWidth="248.0" stylesheets="@application.css"
+			prefHeight="77.0" prefWidth="300.0" stylesheets="@application.css"
 			text="Round : ">
 			<font>
 				<Font size="55.0" />
 			</font>
 		</Label>
 		<Label fx:id="tabataLabel" layoutX="44.0" layoutY="459.0"
-			prefHeight="80.0" prefWidth="248.0" stylesheets="@application.css"
+			prefHeight="80.0" prefWidth="300.0" stylesheets="@application.css"
 			text="Tabata :">
 			<font>
 				<Font size="55.0" />

@@ -6,8 +6,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
+import mainFrame.Timer;
 
 public class Main extends Application {
 
@@ -16,8 +18,10 @@ public class Main extends Application {
     private Button restartRoundButton;
     private FXMLLoader loader;
     private Scene scene;
-    private Pane root;
-    private String css;
+    private static Pane root;
+    private static String css;
+    private Countdown countdown;
+    private Rounds rounds;
 
     @Override
     public void start(Stage primaryStage) {
@@ -36,7 +40,12 @@ public class Main extends Application {
 	    e.printStackTrace();
 	    return;
 	}
-
+	
+	countdown = new Countdown((Label) loader.getNamespace().get("timeLabel"));
+	Label rLabel = (Label) loader.getNamespace().get("roundLabel");
+	Label tLabel = (Label) loader.getNamespace().get("tabataLabel");
+	rounds = new Rounds(8,4,rLabel, tLabel);
+	
 	startButton = (Button) loader.getNamespace().get("startBtn");
 	restartTabataButton = (Button) loader.getNamespace().get("restartBtn");
 	restartRoundButton = (Button) loader.getNamespace().get("tabRestartBtn");
@@ -44,16 +53,14 @@ public class Main extends Application {
 	restartTabataButton.setDisable(true);
 	restartRoundButton.setDisable(true);
 	
-	startButton.setOnAction(new StartEvent());
-	
-
+	startButton.setOnAction(new StartEvent(countdown, rounds));
     }
 
     public static void main(String[] args) {
 	launch(args);
     }
     
-    private void changeBackground(BackgroundIMG state) {
+    public static void changeBackground(BackgroundIMG state) {
 	System.out.println(root.getStyleClass());
 	root.getStyleClass().remove(1);
 	root.getStyleClass().add(state.getCssClass());
@@ -65,25 +72,19 @@ public class Main extends Application {
     class StartEvent implements EventHandler<ActionEvent> {
 
 	private boolean flag = true;
-	// private Runnable r = new Timer();
-	private Runnable r = () -> {
-	    while (true) {
-		System.out.println("Timer on");
-		try {
-		    Thread.sleep(1000);
-		} catch (InterruptedException e) {
-		    System.out.println("Interrupted");
-		    break;
-		}
-	    }
-	};
+	private Runnable r;
 	private Thread t;
+	
+	public StartEvent(Countdown count, Rounds rounds) {
+	    r = new Timer(count, rounds);
+	}
 
 	@Override
 	public void handle(ActionEvent arg0) {
 	    if (flag) {
 		changeBackground(BackgroundIMG.EXERCISE);
 		t = new Thread(r);
+		t.setDaemon(true);
 		t.start();
 		// Changing start button description
 		startButton.setText("Pause");

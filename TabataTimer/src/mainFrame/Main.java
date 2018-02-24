@@ -30,42 +30,42 @@ public class Main extends JFrame {
     private JButton restartRoundButton;
     private FontSizeSetupDialog fontSizeSetupDialog; // Dialog responsible for showing font size setup dialog box
 
-    public Main() {
-	setFrameSize();
-	setLocationRelativeTo(null);
+//    public Main() {
+//	setFrameSize();
+//	setLocationRelativeTo(null);
+//
+//	// Creating TabataPanel tabataPanel. This is main panel of frame.
+//	// It is responsible for displaying background.
+//	// It is also main panel for components witch are responsible for displaying
+//	// countdown and rounds
+//	tabataPanel = new TabataPanel();
+//
+//	Action startAction = new StartAction("Start");
+//	setTabataPanelComponents(startAction);
+//	add(tabataPanel);
+//
+//	setInputMap(startAction);
+//
+//	menuBar = new JMenuBar();
+//	setJMenuBar(menuBar);
+//	addMenuBarItems(menuBar);
+//    }
 
-	// Creating TabataPanel tabataPanel. This is main panel of frame.
-	// It is responsible for displaying background.
-	// It is also main panel for components witch are responsible for displaying
-	// countdown and rounds
-	tabataPanel = new TabataPanel();
-
-	Action startAction = new StartAction("Start");
-	setTabataPanelComponents(startAction);
-	add(tabataPanel);
-
-	setInputMap(startAction);
-
-	menuBar = new JMenuBar();
-	setJMenuBar(menuBar);
-	addMenuBarItems(menuBar);
-    }
-
-    public static void main(String[] args) {
-	EventQueue.invokeLater(new Runnable() {
-	    public void run() {
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setTitle("TabataTimer - Alfa 3.0");
-		frame.setVisible(true);
-
-		JOptionPane.showMessageDialog(frame, "Welcom to Tabata Timer, your best training partner.\n"
-			+ "To start or pause Tabata press SPACE.\n" + "To setup your training, go to SETTINGS.\n"
-			+ "If you get lost, go to HELP\n" + "It is recommended use in fullscreen mode\n"
-			+ "You can change font size in SETTINGS\n", "Start Messege", JOptionPane.PLAIN_MESSAGE);
-
-	    }
-	});
-    }
+//    public static void main(String[] args) {
+//	EventQueue.invokeLater(new Runnable() {
+//	    public void run() {
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//		frame.setTitle("TabataTimer - Alfa 3.0");
+//		frame.setVisible(true);
+//
+//		JOptionPane.showMessageDialog(frame, "Welcom to Tabata Timer, your best training partner.\n"
+//			+ "To start or pause Tabata press SPACE.\n" + "To setup your training, go to SETTINGS.\n"
+//			+ "If you get lost, go to HELP\n" + "It is recommended use in fullscreen mode\n"
+//			+ "You can change font size in SETTINGS\n", "Start Messege", JOptionPane.PLAIN_MESSAGE);
+//
+//	    }
+//	});
+//    }
 
     private void setTabataPanelComponents(Action startAction) {
 	Countdown count = new Countdown(20);
@@ -231,40 +231,40 @@ public class Main extends JFrame {
     // Class responsible for Action. It's starting and interrupting Thread Timer
     // when specific action is performed.
     // Those action are clicking the "Start" button and pressing 'SPACE' key
-    public class StartAction extends AbstractAction {
-	// When flag is true that means Timer must be started and when flag is false, it
-	// must be interrupted
-	private boolean flag = true;
-	private Runnable r = new Timer();
-	private Thread t;
-
-	public StartAction(String name) {
-	    putValue(Action.NAME, name);
-	    putValue(Action.SHORT_DESCRIPTION, "Start countdown");
-	}
-
-	public void actionPerformed(ActionEvent event) {
-	    if (flag) {
-		t = new Thread(r);
-		t.start();
-		// Changing start button description
-		startButton.setText("Pause");
-		restartTabataButton.setEnabled(false);
-		restartRoundButton.setEnabled(false);
-		flag = false;
-	    } else {
-		// Changing start button description
-		startButton.setText("Start");
-		restartTabataButton.setEnabled(true);
-		restartRoundButton.setEnabled(true);
-		// Changing background color of tabataPanel
-		tabataPanel.setColors(Color.WHITE, Color.BLUE);
-		tabataPanel.repaint();
-		// Interrupting Timer thread
-		t.interrupt();
-		flag = true;
-	    }
-	}
-    }
+//    public class StartAction extends AbstractAction {
+//	// When flag is true that means Timer must be started and when flag is false, it
+//	// must be interrupted
+//	private boolean flag = true;
+//	private Runnable r = new Timer();
+//	private Thread t;
+//
+//	public StartAction(String name) {
+//	    putValue(Action.NAME, name);
+//	    putValue(Action.SHORT_DESCRIPTION, "Start countdown");
+//	}
+//
+//	public void actionPerformed(ActionEvent event) {
+//	    if (flag) {
+//		t = new Thread(r);
+//		t.start();
+//		// Changing start button description
+//		startButton.setText("Pause");
+//		restartTabataButton.setEnabled(false);
+//		restartRoundButton.setEnabled(false);
+//		flag = false;
+//	    } else {
+//		// Changing start button description
+//		startButton.setText("Start");
+//		restartTabataButton.setEnabled(true);
+//		restartRoundButton.setEnabled(true);
+//		// Changing background color of tabataPanel
+//		tabataPanel.setColors(Color.WHITE, Color.BLUE);
+//		tabataPanel.repaint();
+//		// Interrupting Timer thread
+//		t.interrupt();
+//		flag = true;
+//	    }
+//	}
+//    }
 
 }
